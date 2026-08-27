@@ -1,478 +1,565 @@
-# HMT 联考招生数据 — Android Termux
+# HMT 联考招生数据 — Android Termux 使用指南
 
-港澳台联考招生数据爬虫与本地查询网页。
-
-本版本用于 Android 手机，通过 Termux 运行 Python 爬虫，生成 `data.js`，再通过手机浏览器访问本地网页。
-
-## 项目结构
-
-```text
-hmt-liankao-data/
-├── crawl_lzks.py
-└── index.html
-```
-
-运行后：
-
-```text
-hmt-liankao-data/
-├── crawl_lzks.py
-├── index.html
-└── data.js
-```
-
-- `crawl_lzks.py`：爬虫
-- `index.html`：查询网页
-- `data.js`：爬虫自动生成的数据文件
+本文件专门介绍如何使用 Android 手机和 Termux 运行本项目。
 
 ---
 
-# 一、安装 Termux
+# 一、你需要准备什么
 
-建议使用官方项目：
+需要：
 
-https://github.com/termux/termux-app
+1. Android 手机；
+2. Termux；
+3. 网络连接；
+4. 本项目文件。
+
+Termux 官方项目：
+
+    https://github.com/termux/termux-app
+
+Python 依赖：
+
+    requests
+    beautifulsoup4
+    tqdm
+
+---
+
+# 二、安装 Termux
 
 安装并打开 Termux。
 
----
-
-# 二、第一次使用
-
-更新软件包：
-
-```bash
-pkg update
-```
-
-然后：
-
-```bash
-pkg upgrade
-```
-
-如果询问是否继续，输入：
-
-```text
-y
-```
+建议使用 Termux 官方项目提供的版本。
 
 ---
 
-# 三、安装 Python
-
-```bash
-pkg install python
-```
-
-检查：
-
-```bash
-python --version
-```
-
-出现类似：
-
-```text
-Python 3.12.x
-```
-
-即可。
-
----
-
-# 四、安装 Git
-
-```bash
-pkg install git
-```
-
-检查：
-
-```bash
-git --version
-```
-
----
-
-# 五、下载项目
+# 三、更新 Termux
 
 输入：
 
-```bash
-git clone https://github.com/yatfan0513/hmt-liankao-data.git
-```
-
-进入：
-
-```bash
-cd hmt-liankao-data
-```
-
-检查：
-
-```bash
-ls
-```
-
-应看到：
-
-```text
-crawl_lzks.py
-index.html
-```
-
----
-
-# 六、安装依赖
-
-```bash
-pip install requests beautifulsoup4 tqdm
-```
-
-如果 `pip` 无法使用：
-
-```bash
-python -m pip install requests beautifulsoup4 tqdm
-```
-
----
-
-# 七、运行爬虫
-
-确保当前位于：
-
-```text
-hmt-liankao-data
-```
-
-运行：
-
-```bash
-python crawl_lzks.py
-```
-
-保持 Termux 打开，并保持网络连接。
-
-等待爬虫完成。
+    pkg update
 
 然后：
 
-```bash
-ls
-```
+    pkg upgrade
 
-应该看到：
+如果出现：
 
-```text
-crawl_lzks.py
-index.html
-data.js
-```
+    Do you want to continue? [Y/n]
 
----
+输入：
 
-# 八、推荐使用 127.0.0.1:8000
+    y
 
-Android 浏览器直接打开本地 `file://` HTML 时，可能限制网页读取 `data.js`。
-
-因此推荐使用 Python 本地 HTTP 服务器。
-
-在项目目录运行：
-
-```bash
-python -m http.server 8000
-```
-
-看到类似：
-
-```text
-Serving HTTP on 0.0.0.0 port 8000 ...
-```
-
-后不要关闭 Termux。
-
-打开手机浏览器，在地址栏输入：
-
-```text
-http://127.0.0.1:8000
-```
-
-然后访问。
-
-此时：
-
-```text
-浏览器
-  ↓
-http://127.0.0.1:8000
-  ↓
-index.html
-  ↓
-data.js
-```
-
-这样通常可以解决直接打开 HTML 时的数据读取/跨域问题。
-
-> 注意必须使用 `http://`，不是 `https://`。
+然后按 Enter。
 
 ---
 
-# 九、停止服务器
+# 四、安装 Python
 
-使用完成后回到 Termux，按：
+输入：
 
-```text
-Ctrl + C
-```
-
-停止服务器。
-
-如果手机键盘没有 Ctrl，可使用 Termux 的额外按键功能发送 Ctrl+C。
-
-下次使用：
-
-```bash
-python -m http.server 8000
-```
-
-即可重新启动。
-
----
-
-# 十、使用手机共享存储
-
-如果希望用 Android 文件管理器看到项目，可以执行：
-
-```bash
-termux-setup-storage
-```
-
-允许 Termux 访问文件。
-
-手机的 Download 文件夹通常对应：
-
-```text
-~/storage/downloads/
-```
-
-例如项目放在：
-
-```text
-内部存储/Download/hmt-liankao-data/
-```
-
-Termux 中对应：
-
-```text
-~/storage/downloads/hmt-liankao-data/
-```
-
-进入：
-
-```bash
-cd ~/storage/downloads/hmt-liankao-data
-```
+    pkg install python
 
 检查：
 
-```bash
-ls
-```
+    python --version
 
-然后同样可以运行：
+如果出现：
 
-```bash
-python crawl_lzks.py
-```
+    Python 3.x.x
+
+说明 Python 安装成功。
 
 ---
 
-# 十一、推荐的手机存储结构
+# 五、安装 Git
 
-```text
-内部存储/
-└── Download/
-    └── hmt-liankao-data/
-        ├── crawl_lzks.py
-        ├── index.html
-        └── data.js
-```
+输入：
 
-这样方便：
+    pkg install git
 
-- Termux 运行 Python
-- 文件管理器查看文件
-- 浏览器使用网页
-- 备份项目
+检查：
+
+    git --version
 
 ---
 
-# 十二、从 GitHub 到网页的完整操作
+# 六、下载项目
 
-第一次使用：
+输入：
 
-```bash
-pkg update
-pkg upgrade
-pkg install python git
-git clone https://github.com/yatfan0513/hmt-liankao-data.git
-cd hmt-liankao-data
-pip install requests beautifulsoup4 tqdm
-python crawl_lzks.py
-python -m http.server 8000
-```
-
-然后浏览器打开：
-
-```text
-http://127.0.0.1:8000
-```
-
----
-
-# 十三、以后更新数据
+    git clone https://github.com/yatfan0513/hmt-liankao-data.git
 
 进入项目：
 
-```bash
-cd ~/hmt-liankao-data
-```
+    cd hmt-liankao-data
 
-重新运行：
+输入：
 
-```bash
-python crawl_lzks.py
-```
+    ls
 
-完成后：
+应该看到：
 
-```bash
-python -m http.server 8000
-```
-
-浏览器访问：
-
-```text
-http://127.0.0.1:8000
-```
-
-如果显示旧数据，刷新浏览器页面。
+    crawl_lzks.py
+    index.html
+    year.js
+    mark.js
+    实测.png
 
 ---
 
-# 十四、常见问题
+# 七、安装依赖
 
-### Python 找不到
+输入：
 
-```bash
-pkg install python
-```
+    pip install requests beautifulsoup4 tqdm
 
-### pip 找不到
+如果失败：
 
-```bash
-python -m pip install requests beautifulsoup4 tqdm
-```
+    python -m pip install requests beautifulsoup4 tqdm
 
-### 缺少 requests
+---
 
-```bash
-pip install requests
-```
+# 八、运行爬虫
 
-### 缺少 bs4
+输入：
 
-```bash
-pip install beautifulsoup4
-```
+    python crawl_lzks.py
 
-### 缺少 tqdm
+等待爬虫完成。
 
-```bash
-pip install tqdm
-```
+目前实测：
 
-### data.js 没有生成
+    约 1 分钟
 
-重新运行：
+实际时间可能受到：
 
-```bash
-python crawl_lzks.py
-```
+- 网络速度；
+- 目标网站响应速度；
+- 手机性能
 
-### 网页打开但没有数据
+等因素影响。
 
-不要直接使用 `file://`。
+运行过程中不要关闭 Termux。
+
+---
+
+# 九、确认 data.js
+
+完成后输入：
+
+    ls
+
+应该看到：
+
+    crawl_lzks.py
+    index.html
+    year.js
+    mark.js
+    实测.png
+    data.js
+
+---
+
+# 十、修改年份
+
+项目中的：
+
+    year.js
+
+负责控制网页显示的年份。
+
+例如需要显示：
+
+    2027
+
+就修改 `year.js` 中的数字。
+
+保存以后刷新网页即可。
+
+注意：
+
+`year.js` 不负责决定爬虫获取哪一年的数据。
+
+它只控制网页显示的年份。
+
+---
+
+# 十一、修改最低分数线
+
+打开：
+
+    mark.js
+
+从广东省教育考试院官方网站或者官方微信公众号获取最新最低分数线。
+
+确认以后手动修改：
+
+    mark.js
+
+保存以后刷新网页。
+
+---
+
+# 十二、启动网页
 
 进入项目目录：
 
-```bash
-python -m http.server 8000
-```
+    cd hmt-liankao-data
 
-然后打开：
+运行：
 
-```text
-http://127.0.0.1:8000
-```
+    python -m http.server 8000
 
-### 127.0.0.1:8000 打不开
+如果看到：
 
-确认 Termux 中仍然显示：
+    Serving HTTP on 0.0.0.0 port 8000 ...
 
-```text
-Serving HTTP on 0.0.0.0 port 8000 ...
-```
+说明服务器启动成功。
 
-如果服务器已经停止，重新运行：
-
-```bash
-python -m http.server 8000
-```
-
-确认浏览器输入的是：
-
-```text
-http://127.0.0.1:8000
-```
-
-而不是：
-
-```text
-https://127.0.0.1:8000
-```
+不要关闭 Termux。
 
 ---
 
-# 十五、最简操作
+# 十三、打开网页
 
-已经安装 Python、Git 和依赖后：
+打开手机浏览器。
 
-```bash
-cd ~/hmt-liankao-data
-python crawl_lzks.py
-python -m http.server 8000
-```
+输入：
+
+    http://127.0.0.1:8000
+
+即可打开：
+
+    index.html
+
+网页会读取：
+
+    data.js
+    year.js
+    mark.js
+
+---
+
+# 十四、为什么使用 127.0.0.1:8000
+
+Android 浏览器直接打开：
+
+    file://
+
+格式的 HTML 时，有时会限制网页读取本地 JavaScript 文件。
+
+因此推荐：
+
+    python -m http.server 8000
+
+然后使用：
+
+    http://127.0.0.1:8000
+
+这样网页通过 HTTP 访问本地文件。
+
+---
+
+# 十五、注意 http 和 https
+
+正确：
+
+    http://127.0.0.1:8000
+
+错误：
+
+    https://127.0.0.1:8000
+
+必须使用：
+
+    http://
+
+---
+
+# 十六、停止服务器
+
+回到 Termux。
+
+按：
+
+    Ctrl + C
+
+即可停止。
+
+如果手机键盘没有 Ctrl，可以使用 Termux 的额外按键功能发送 Ctrl+C。
+
+---
+
+# 十七、让 Termux 访问手机文件
+
+输入：
+
+    termux-setup-storage
+
+Android 会请求存储权限。
+
+允许。
+
+以后：
+
+    ~/storage/
+
+就是 Termux 可以访问的手机存储目录。
+
+Download 通常是：
+
+    ~/storage/downloads/
+
+---
+
+# 十八、把项目放到 Download
+
+推荐：
+
+    内部存储/
+    └── Download/
+        └── hmt-liankao-data/
+            ├── crawl_lzks.py
+            ├── index.html
+            ├── year.js
+            ├── mark.js
+            ├── 实测.png
+            └── data.js
+
+Termux 中进入：
+
+    cd ~/storage/downloads/hmt-liankao-data
+
+检查：
+
+    ls
+
+---
+
+# 十九、从手机文件夹运行
+
+如果项目在 Download：
+
+    cd ~/storage/downloads/hmt-liankao-data
+
+运行爬虫：
+
+    python crawl_lzks.py
+
+完成后：
+
+    python -m http.server 8000
 
 浏览器打开：
 
-```text
-http://127.0.0.1:8000
-```
-
-即可。
+    http://127.0.0.1:8000
 
 ---
 
-# 十六、注意事项
+# 二十、手机完整操作
 
-爬虫需要网络连接。
+第一次：
 
-运行爬虫时不要关闭 Termux。
+    pkg update
+    pkg upgrade
+    pkg install python git
 
-运行本地服务器时不要关闭 Termux，否则 `127.0.0.1:8000` 会停止。
+下载：
 
-本项目依赖目标网站当前的页面结构。网站改版或接口变化后，爬虫可能需要修改。
+    git clone https://github.com/yatfan0513/hmt-liankao-data.git
 
-本项目用于招生数据整理、查询、学习和研究。使用时请遵守目标网站相关规定及适用法律法规。
+进入：
+
+    cd hmt-liankao-data
+
+安装：
+
+    pip install requests beautifulsoup4 tqdm
+
+运行：
+
+    python crawl_lzks.py
+
+启动网页：
+
+    python -m http.server 8000
+
+浏览器：
+
+    http://127.0.0.1:8000
+
+---
+
+# 二十一、以后更新数据
+
+进入项目：
+
+    cd ~/hmt-liankao-data
+
+运行：
+
+    python crawl_lzks.py
+
+等待完成。
+
+确认：
+
+    data.js
+
+已经生成。
+
+然后检查：
+
+    year.js
+
+是否需要修改。
+
+从广东省教育考试院官方渠道确认最新最低分数线。
+
+修改：
+
+    mark.js
+
+最后：
+
+    python -m http.server 8000
+
+浏览器打开：
+
+    http://127.0.0.1:8000
+
+---
+
+# 二十二、常见问题
+
+## Python 找不到
+
+输入：
+
+    pkg install python
+
+---
+
+## pip 找不到
+
+输入：
+
+    python -m pip install requests beautifulsoup4 tqdm
+
+---
+
+## 缺少 requests
+
+    pip install requests
+
+---
+
+## 缺少 bs4
+
+    pip install beautifulsoup4
+
+---
+
+## 缺少 tqdm
+
+    pip install tqdm
+
+---
+
+## data.js 没有生成
+
+检查当前目录：
+
+    pwd
+
+然后：
+
+    ls
+
+确认存在：
+
+    crawl_lzks.py
+
+再运行：
+
+    python crawl_lzks.py
+
+---
+
+## 网页没有数据
+
+运行：
+
+    python -m http.server 8000
+
+浏览器打开：
+
+    http://127.0.0.1:8000
+
+---
+
+## 127.0.0.1:8000 打不开
+
+检查 Termux 是否仍然显示：
+
+    Serving HTTP on 0.0.0.0 port 8000 ...
+
+如果没有，重新运行：
+
+    python -m http.server 8000
+
+确认浏览器输入：
+
+    http://127.0.0.1:8000
+
+而不是：
+
+    https://127.0.0.1:8000
+
+---
+
+## year.js 修改后没有变化
+
+保存 `year.js` 后刷新网页。
+
+---
+
+## mark.js 修改后没有变化
+
+保存 `mark.js` 后刷新网页。
+
+---
+
+# 二十三、实测
+
+项目中的：
+
+    实测.png
+
+是爬虫运行的实际截图。
+
+目前实测运行时间：
+
+    约 1 分钟
+
+实际运行时间可能有所不同。
+
+---
+
+# 二十四、注意
+
+- 爬虫需要网络；
+- 运行爬虫时不要关闭 Termux；
+- 运行 HTTP 服务器时不要关闭 Termux；
+- `data.js` 由爬虫自动生成；
+- `year.js` 控制网页显示年份；
+- `mark.js` 控制网页显示最低分数线；
+- 最低分数线需要从广东省教育考试院官方渠道确认；
+- `index.html`、`year.js`、`mark.js`、`data.js` 应位于同一个项目目录；
+- 本地服务器使用完成后按 `Ctrl+C` 停止。
+
+本项目用于港澳台联考招生数据整理、查询、学习和研究。
+
+标签信息来自网络，若有误可手动修改 `index.html` 。
