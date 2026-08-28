@@ -5,12 +5,14 @@
   2026年全国联招 - 招生院校及专业全量爬虫 (并行加速版)
   目标: https://www.eeagd.edu.cn/lzks/yxzycx/
   输出: data.js (包含 allSchools + allMajors)
+  分数线数据: 由 bar.py 生成 bar.js 文件
 =============================================================
 
 【使用说明】
   1. 安装依赖:  pip install requests beautifulsoup4 tqdm
   2. 运行脚本:  python crawl_lzks.py
   3. 脚本自动获取全部院校、专业列表、专业详情数据，生成data.js
+     分数线数据请运行 bar.py 生成 bar.js
 """
 
 import requests
@@ -380,7 +382,6 @@ def main():
             "zipcode": detail.get("zipcode", ""),
             "records": records,
             "tags": tags,
-            "history_scores_2025": {},
         }
         all_schools.append(school)
 
