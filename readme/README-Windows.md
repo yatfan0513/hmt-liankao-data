@@ -1,437 +1,769 @@
-# HMT 联考招生数据 — Windows 使用指南
+# HMT 联考招生数据 — Windows 操作指南
 
-本文件专门介绍如何在 Windows 电脑上运行本项目。
+本教程适合第一次使用 Python、CMD 和本地网页的 Windows 用户。
 
----
-
-# 一、你需要准备什么
-
-只需要：
-
-1. 一台 Windows 电脑；
-2. Python；
-3. 网络连接；
-4. 本项目文件。
-
-需要安装的 Python 依赖：
-
-    requests
-    beautifulsoup4
-    tqdm
+按照下面的顺序操作即可。
 
 ---
 
-# 二、安装 Python
+## 一、准备项目文件夹
 
-打开：
+先将整个项目下载到电脑。
 
-    https://www.python.org/
+例如放在：
 
-下载安装 Python。
+```text
+C:\Users\ABC\Documents\hmt-liankao-data
+```
 
-安装时一定建议勾选：
+这里的 `ABC` 只是示例，请根据电脑实际情况替换。
 
-    Add Python to PATH
+项目文件夹中应有：
 
-安装完成以后关闭安装程序。
+```text
+hmt-liankao-data/
+│
+├── readme/
+│   ├── README-Termux.md
+│   └── README-Windows.md
+│
+├── bar.js
+├── bar.py
+├── bar.xlsx
+├── crawl_lzks.py
+├── data.js
+├── index.html
+├── mark.js
+├── year.js
+├── 啟動網站.bat
+└── 实测.png
+```
 
 ---
 
-# 三、检查 Python
+## 二、安装 Python
+
+打开浏览器，进入：
+
+```text
+https://www.python.org/
+```
+
+下载适用于 Windows 的 Python。
+
+安装时，如果看到：
+
+```text
+Add Python to PATH
+```
+
+请勾选。
+
+然后完成安装。
+
+---
+
+## 三、检查 Python 是否安装成功
 
 按：
 
-    Win + R
+```text
+Win + R
+```
 
 输入：
 
-    cmd
+```text
+cmd
+```
 
 按 Enter。
 
-输入：
+出现黑色窗口后输入：
 
-    python --version
+```cmd
+python --version
+```
 
-如果出现：
+如果看到类似：
 
-    Python 3.x.x
+```text
+Python 3.13.7
+```
 
 说明 Python 已经安装成功。
 
 ---
 
-# 四、安装依赖
+## 四、安装依赖
 
 在 CMD 输入：
 
-    pip install requests beautifulsoup4 tqdm
+```cmd
+python -m pip install requests beautifulsoup4 tqdm pandas openpyxl
+```
 
-如果提示 pip 不存在：
+等待安装完成。
 
-    python -m pip install requests beautifulsoup4 tqdm
+本项目使用的主要 Python 库：
 
-安装完成即可。
+```text
+requests
+beautifulsoup4
+tqdm
+pandas
+openpyxl
+```
 
----
-
-# 五、准备项目文件
-
-例如把项目放在：
-
-    C:\Users\ABC\Documents\hmt-liankao-data\
-
-其中 `ABC` 只是示例。
-
-项目目录应该有：
-
-    hmt-liankao-data/
-    ├── crawl_lzks.py
-    ├── index.html
-    ├── year.js
-    ├── mark.js
-    └── 实测.png
+以后如果已经安装过这些依赖，一般不需要重复安装。
 
 ---
 
-# 六、进入项目目录
+## 五、进入项目文件夹
 
-按：
+假设项目位置：
 
-    Win + R
+```text
+C:\Users\ABC\Documents\hmt-liankao-data
+```
+
+在 CMD 输入：
+
+```cmd
+cd C:\Users\ABC\Documents\hmt-liankao-data
+```
+
+然后按 Enter。
 
 输入：
 
-    cmd
+```cmd
+dir
+```
 
-按 Enter。
+如果能够看到：
 
-输入：
+```text
+crawl_lzks.py
+index.html
+year.js
+mark.js
+bar.py
+bar.js
+```
 
-    cd C:\Users\ABC\Documents\hmt-liankao-data
-
-然后输入：
-
-    dir
-
-确认能够看到：
-
-    crawl_lzks.py
-    index.html
-    year.js
-    mark.js
-    实测.png
+说明进入了正确的文件夹。
 
 ---
 
-# 七、运行爬虫
+# 六、第一步：修改 year.js
 
-输入：
+找到：
 
-    python crawl_lzks.py
+```text
+year.js
+```
 
-然后等待。
+右键：
 
-目前实际测试：
+```text
+打开方式 → 记事本
+```
 
-    约 1 分钟
+按照当前实际年份修改。
 
-具体时间取决于网络和目标网站响应速度。
+例如当前年份是：
 
-运行过程中不要关闭 CMD。
+```text
+2027
+```
 
----
+就设置为：
 
-# 八、确认 data.js
-
-爬虫完成以后，输入：
-
-    dir
-
-应该出现：
-
-    data.js
-
-最终：
-
-    hmt-liankao-data/
-    ├── crawl_lzks.py
-    ├── index.html
-    ├── year.js
-    ├── mark.js
-    ├── 实测.png
-    └── data.js
-
----
-
-# 九、修改年份
-
-打开：
-
-    year.js
-
-例如：
-
-    2027
-
-网页就会显示 2027。
-
-如果需要显示其他年份，就修改这个数字。
-
-注意：
-
-`year.js` 只负责网页显示的年份。
-
-它不会改变爬虫获取的数据。
-
----
-
-# 十、修改最低分数线
-
-打开：
-
-    mark.js
-
-从广东省教育考试院官方网站或者官方微信公众号查看最新最低分数线。
-
-确认以后手动修改 `mark.js`。
+```text
+2027
+```
 
 保存文件。
 
-网页刷新后即可显示新的最低分数线。
+---
+
+# 七、第二步：运行爬虫
+
+回到 CMD。
+
+确认当前目录是项目目录：
+
+```text
+C:\Users\ABC\Documents\hmt-liankao-data
+```
+
+输入：
+
+```cmd
+python crawl_lzks.py
+```
+
+按 Enter。
+
+程序开始爬取招生数据。
 
 ---
 
-# 十一、打开网页
+## 八、爬虫运行时间
 
-直接双击：
+目前实测：
 
-    index.html
+```text
+约 1 分钟左右
+```
 
-如果网页正常显示数据，可以直接使用。
+实际时间不固定。
 
----
+可能受到：
 
-# 十二、如果网页没有数据
+- 网络速度
+- 官方网站响应速度
+- 官方服务器状态
+- 数据量
 
-如果出现：
+等因素影响。
 
-    页面可以打开，但是没有数据
+项目中的：
 
-或者：
+```text
+实测.png
+```
 
-    data.js 无法读取
-
-使用本地服务器。
-
-先进入项目目录：
-
-    cd C:\Users\ABC\Documents\hmt-liankao-data
-
-然后：
-
-    python -m http.server 8000
-
-看到：
-
-    Serving HTTP on 0.0.0.0 port 8000 ...
-
-不要关闭 CMD。
-
-打开浏览器：
-
-    http://127.0.0.1:8000
-
-即可。
+是爬虫运行的实测截图。
 
 ---
 
-# 十三、为什么使用 127.0.0.1:8000
+# 九、第三步：确认 data.js
 
-直接双击 HTML 时，浏览器使用：
+爬虫完成后，会生成或更新：
 
-    file://
+```text
+data.js
+```
 
-有些浏览器会限制网页读取本地 JavaScript 数据文件。
+这是：
 
-使用：
+```text
+crawl_lzks.py
+```
 
-    http://127.0.0.1:8000
+获取的招生数据。
 
-以后，网页就通过本地 HTTP 服务器访问。
+一般不要手动修改 `data.js`。
+
+---
+
+# 十、第四步：更新 mark.js
+
+现在需要获得：
+
+```text
+year.js
+```
+
+所表示年份的最低分数线。
+
+例如：
+
+```text
+year.js = 2027
+```
+
+就需要获得：
+
+```text
+2027 年最低分数线
+```
+
+可以从官方渠道获取，例如：
+
+```text
+广东省教育考试院官方网站
+广东省教育考试院官方微信公众号
+全国联招相关官方公告
+```
+
+获得数据后，打开：
+
+```text
+mark.js
+```
+
+按照原文件格式修改并保存。
+
+---
+
+# 十一、第五步：准备 bar.xlsx
+
+现在需要准备上一年度各院校分数线。
+
+计算：
+
+```text
+year.js - 1
+```
+
+例如：
+
+```text
+year.js = 2027
+```
+
+那么：
+
+```text
+2027 - 1 = 2026
+```
 
 因此：
 
-    index.html
-    data.js
-    year.js
-    mark.js
+```text
+bar.xlsx
+```
 
-可以正常加载。
+应当保存：
 
----
-
-# 十四、关闭服务器
-
-使用完成以后回到 CMD。
-
-按：
-
-    Ctrl + C
-
-即可。
+```text
+2026 年各院校分数线
+```
 
 ---
 
-# 十五、以后更新数据
+# 十二、获取 bar.xlsx
 
-进入项目：
+从官方渠道下载上一年度各院校分数线 PDF。
 
-    cd C:\Users\ABC\Documents\hmt-liankao-data
+如果下载到的是扫描版 PDF，可以：
+
+```text
+官方 PDF
+↓
+OCR
+↓
+AI 整理
+↓
+Excel
+↓
+bar.xlsx
+```
+
+最后将 Excel 文件命名为：
+
+```text
+bar.xlsx
+```
+
+并放在项目根目录。
+
+也就是：
+
+```text
+bar.py
+bar.xlsx
+```
+
+必须位于同一个文件夹。
+
+---
+
+# 十三、第六步：运行 bar.py
+
+回到 CMD。
+
+确认：
+
+```text
+bar.py
+bar.xlsx
+year.js
+bar.js
+```
+
+都在项目目录。
+
+输入：
+
+```cmd
+python bar.py
+```
+
+按 Enter。
+
+程序会读取：
+
+```text
+year.js
+```
+
+然后计算：
+
+```text
+year.js - 1
+```
+
+再把 `bar.xlsx` 中的数据加入：
+
+```text
+bar.js
+```
+
+---
+
+# 十四、bar.py 会保留历史数据
+
+例如原来的：
+
+```text
+bar.js
+```
+
+已经有：
+
+```text
+2024
+2025
+```
+
+现在：
+
+```text
+year.js = 2027
+```
+
+那么：
+
+```text
+bar.xlsx = 2026
+```
 
 运行：
 
-    python crawl_lzks.py
+```cmd
+python bar.py
+```
 
-等待完成。
+应该保留：
 
-确认生成：
+```text
+2024
+2025
+2026
+```
 
-    data.js
-
-然后检查：
-
-    year.js
-
-再从广东省教育考试院官方渠道确认最新最低分数线。
-
-修改：
-
-    mark.js
-
-最后打开：
-
-    index.html
-
-如果无法读取数据：
-
-    python -m http.server 8000
-
-浏览器打开：
-
-    http://127.0.0.1:8000
+不会删除以前的数据。
 
 ---
 
-# 十六、Windows 最简操作
+# 十五、bar.js 不要删除
 
-安装依赖：
+即使暂时没有历史分数线，也必须保留：
 
-    pip install requests beautifulsoup4 tqdm
+```text
+bar.js
+```
 
-进入目录：
+否则 `index.html` 可能无法正常使用。
 
-    cd C:\Users\ABC\Documents\hmt-liankao-data
+---
 
-运行：
+# 十六、第七步：启动网站
 
-    python crawl_lzks.py
+最简单的方法：
 
-修改：
+直接双击：
 
-    year.js
-    mark.js
+```text
+啟動網站.bat
+```
+
+它会帮助启动本地网站。
+
+---
+
+# 十七、如果不使用啟動網站.bat
+
+也可以自己启动。
+
+CMD 输入：
+
+```cmd
+python -m http.server 8000
+```
+
+然后打开浏览器。
+
+输入：
+
+```text
+http://127.0.0.1:8000
+```
+
+按 Enter。
+
+即可访问网站。
+
+---
+
+# 十八、为什么需要 127.0.0.1:8000？
+
+直接双击：
+
+```text
+index.html
+```
+
+浏览器会使用：
+
+```text
+file:///
+```
+
+某些浏览器会限制本地 HTML 读取 JavaScript 文件。
+
+因此可能出现：
+
+```text
+网页可以打开
+但是没有数据
+```
+
+或者：
+
+```text
+数据加载失败
+```
+
+这时候使用：
+
+```cmd
+python -m http.server 8000
+```
+
+然后访问：
+
+```text
+http://127.0.0.1:8000
+```
+
+网页就会通过 HTTP 运行。
+
+---
+
+# 十九、每年更新一次的完整流程
+
+以后更新新一年数据时：
+
+### ① 修改年份
 
 打开：
 
-    index.html
+```text
+year.js
+```
 
-如果无法读取数据：
+修改为实际年份。
 
-    python -m http.server 8000
+### ② 运行爬虫
 
-浏览器：
+```cmd
+python crawl_lzks.py
+```
 
-    http://127.0.0.1:8000
+### ③ 更新招生数据
 
----
+确认：
 
-# 十七、常见问题
+```text
+data.js
+```
 
-## Python 找不到
+已经更新。
 
-重新安装 Python，并勾选：
+### ④ 获取当前年份最低分数线
 
-    Add Python to PATH
-
----
-
-## pip 找不到
-
-使用：
-
-    python -m pip install requests beautifulsoup4 tqdm
-
----
-
-## data.js 没有生成
-
-重新进入项目目录：
-
-    cd C:\Users\ABC\Documents\hmt-liankao-data
-
-然后：
-
-    python crawl_lzks.py
-
----
-
-## 网页没有数据
-
-使用：
-
-    python -m http.server 8000
-
-浏览器打开：
-
-    http://127.0.0.1:8000
-
----
-
-## 网页年份没有变化
+从官方渠道获取数据。
 
 修改：
 
-    year.js
+```text
+mark.js
+```
 
-保存以后刷新网页。
+### ⑤ 获取上一年度院校分数线
 
-电脑可以按：
+下载官方 PDF。
 
-    Ctrl + F5
+扫描版 PDF 可以通过 OCR / AI 整理成：
+
+```text
+bar.xlsx
+```
+
+### ⑥ 更新历史分数线
+
+运行：
+
+```cmd
+python bar.py
+```
+
+### ⑦ 启动网站
+
+双击：
+
+```text
+啟動網站.bat
+```
+
+或者：
+
+```cmd
+python -m http.server 8000
+```
+
+然后访问：
+
+```text
+http://127.0.0.1:8000
+```
 
 ---
 
-## 最低分数线没有变化
+# 二十、最常用的命令
 
-修改：
+安装依赖：
 
-    mark.js
+```cmd
+python -m pip install requests beautifulsoup4 tqdm pandas openpyxl
+```
 
-保存以后刷新网页。
+运行爬虫：
+
+```cmd
+python crawl_lzks.py
+```
+
+更新历史分数线：
+
+```cmd
+python bar.py
+```
+
+启动网站：
+
+```cmd
+python -m http.server 8000
+```
+
+网站地址：
+
+```text
+http://127.0.0.1:8000
+```
 
 ---
 
-# 十八、注意
+# 二十一、常见问题
 
-- `data.js` 不需要手动创建；
-- `data.js` 是 `crawl_lzks.py` 自动生成的；
-- `year.js` 控制网页显示年份；
-- `mark.js` 控制网页显示最低分数线；
-- 最低分数线应从广东省教育考试院官方渠道确认；
-- 爬虫运行需要网络；
-- 运行服务器时不能关闭 CMD。
+## 1. 输入 python 后提示找不到
 
-本项目用于港澳台联考招生数据整理、查询、学习和研究。
+重新安装 Python，并确认安装时勾选：
 
-标签信息来自网络，若有误可手动修改 `index.html` 。
+```text
+Add Python to PATH
+```
+
+然后关闭 CMD，再重新打开。
+
+---
+
+## 2. pip 安装失败
+
+先检查：
+
+```cmd
+python --version
+```
+
+然后再次执行：
+
+```cmd
+python -m pip install requests beautifulsoup4 tqdm pandas openpyxl
+```
+
+---
+
+## 3. 找不到 crawl_lzks.py
+
+输入：
+
+```cmd
+dir
+```
+
+确认当前文件夹是否存在：
+
+```text
+crawl_lzks.py
+```
+
+如果没有，使用 `cd` 进入正确的项目目录。
+
+---
+
+## 4. bar.py 找不到 bar.xlsx
+
+确认：
+
+```text
+bar.py
+bar.xlsx
+```
+
+位于同一个项目目录。
+
+---
+
+## 5. 网页打开但没有数据
+
+运行：
+
+```cmd
+python -m http.server 8000
+```
+
+然后访问：
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+## 6. 没有历史分数线
+
+不要删除：
+
+```text
+bar.js
+```
+
+保持文件存在即可。
+
+以后获得官方历史数据后，再制作：
+
+```text
+bar.xlsx
+```
+
+并运行：
+
+```cmd
+python bar.py
+```

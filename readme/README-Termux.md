@@ -1,565 +1,839 @@
-# HMT 联考招生数据 — Android Termux 使用指南
+# HMT 联考招生数据 — Termux 操作指南
 
-本文件专门介绍如何使用 Android 手机和 Termux 运行本项目。
+本教程适用于 Android 手机或平板上的 Termux。
 
----
-
-# 一、你需要准备什么
-
-需要：
-
-1. Android 手机；
-2. Termux；
-3. 网络连接；
-4. 本项目文件。
-
-Termux 官方项目：
-
-    https://github.com/termux/termux-app
-
-Python 依赖：
-
-    requests
-    beautifulsoup4
-    tqdm
+如果第一次使用 Termux，可以完全按照下面的顺序操作。
 
 ---
 
-# 二、安装 Termux
+# 一、安装 Termux
 
-安装并打开 Termux。
+打开 Termux。
 
-建议使用 Termux 官方项目提供的版本。
+如果看到：
+
+```text
+$
+```
+
+说明已经进入命令行。
+
+教程中的 `$` 不需要输入。
 
 ---
 
-# 三、更新 Termux
+# 二、更新 Termux
 
 输入：
 
-    pkg update
-
-然后：
-
-    pkg upgrade
+```bash
+pkg update && pkg upgrade
+```
 
 如果出现：
 
-    Do you want to continue? [Y/n]
+```text
+Do you want to continue? [Y/n]
+```
 
 输入：
 
-    y
+```text
+y
+```
 
 然后按 Enter。
 
 ---
 
-# 四、安装 Python
+# 三、安装 Python
 
 输入：
 
-    pkg install python
+```bash
+pkg install python
+```
+
+如果要求确认：
+
+```text
+y
+```
+
+然后按 Enter。
 
 检查：
 
-    python --version
+```bash
+python --version
+```
 
-如果出现：
+如果显示：
 
-    Python 3.x.x
+```text
+Python 3.x.x
+```
 
-说明 Python 安装成功。
+说明安装成功。
 
 ---
 
-# 五、安装 Git
+# 四、安装 Git
 
 输入：
 
-    pkg install git
+```bash
+pkg install git
+```
 
-检查：
-
-    git --version
+然后按照提示完成安装。
 
 ---
 
-# 六、下载项目
+# 五、下载项目
 
 输入：
 
-    git clone https://github.com/yatfan0513/hmt-liankao-data.git
+```bash
+git clone https://github.com/yatfan0513/hmt-liankao-data.git
+```
 
-进入项目：
+下载完成后进入项目：
 
-    cd hmt-liankao-data
+```bash
+cd hmt-liankao-data
+```
+
+---
+
+# 六、检查项目文件
 
 输入：
 
-    ls
+```bash
+ls
+```
 
-应该看到：
+应该能看到：
 
-    crawl_lzks.py
-    index.html
-    year.js
-    mark.js
-    实测.png
+```text
+bar.js
+bar.py
+bar.xlsx
+crawl_lzks.py
+data.js
+index.html
+mark.js
+year.js
+啟動網站.bat
+实测.png
+readme
+```
 
 ---
 
-# 七、安装依赖
+# 七、安装 Python 依赖
 
 输入：
 
-    pip install requests beautifulsoup4 tqdm
+```bash
+python -m pip install requests beautifulsoup4 tqdm pandas openpyxl
+```
 
-如果失败：
+本项目主要使用：
 
-    python -m pip install requests beautifulsoup4 tqdm
+```text
+requests
+beautifulsoup4
+tqdm
+pandas
+openpyxl
+```
 
----
-
-# 八、运行爬虫
-
-输入：
-
-    python crawl_lzks.py
-
-等待爬虫完成。
-
-目前实测：
-
-    约 1 分钟
-
-实际时间可能受到：
-
-- 网络速度；
-- 目标网站响应速度；
-- 手机性能
-
-等因素影响。
-
-运行过程中不要关闭 Termux。
+等待安装完成。
 
 ---
 
-# 九、确认 data.js
-
-完成后输入：
-
-    ls
-
-应该看到：
-
-    crawl_lzks.py
-    index.html
-    year.js
-    mark.js
-    实测.png
-    data.js
-
----
-
-# 十、修改年份
-
-项目中的：
-
-    year.js
-
-负责控制网页显示的年份。
-
-例如需要显示：
-
-    2027
-
-就修改 `year.js` 中的数字。
-
-保存以后刷新网页即可。
-
-注意：
-
-`year.js` 不负责决定爬虫获取哪一年的数据。
-
-它只控制网页显示的年份。
-
----
-
-# 十一、修改最低分数线
-
-打开：
-
-    mark.js
-
-从广东省教育考试院官方网站或者官方微信公众号获取最新最低分数线。
-
-确认以后手动修改：
-
-    mark.js
-
-保存以后刷新网页。
-
----
-
-# 十二、启动网页
+# 八、第一步：修改 year.js
 
 进入项目目录：
 
-    cd hmt-liankao-data
+```bash
+cd ~/hmt-liankao-data
+```
+
+使用 nano 打开：
+
+```bash
+nano year.js
+```
+
+把年份修改为当前实际年份。
+
+例如：
+
+```text
+2027
+```
+
+保存：
+
+```text
+Ctrl + O
+```
+
+按 Enter。
+
+退出：
+
+```text
+Ctrl + X
+```
+
+---
+
+# 九、year.js 的作用
+
+`year.js` 记录当前网站使用的年份。
+
+例如：
+
+```text
+year.js = 2027
+```
+
+网站就按照 2027 年显示和处理。
+
+同时：
+
+```text
+bar.py
+```
+
+会计算：
+
+```text
+2027 - 1 = 2026
+```
+
+所以：
+
+```text
+bar.xlsx
+```
+
+应该是 2026 年各院校分数线。
+
+---
+
+# 十、第二步：运行 crawl_lzks.py
 
 运行：
 
-    python -m http.server 8000
+```bash
+python crawl_lzks.py
+```
 
-如果看到：
+程序开始爬取招生数据。
 
-    Serving HTTP on 0.0.0.0 port 8000 ...
-
-说明服务器启动成功。
-
-不要关闭 Termux。
+运行期间不要随意关闭 Termux。
 
 ---
 
-# 十三、打开网页
+# 十一、爬虫运行时间
 
-打开手机浏览器。
+目前实测：
 
-输入：
+```text
+约 1 分钟左右
+```
 
-    http://127.0.0.1:8000
+实际运行时间可能不同。
 
-即可打开：
+影响因素包括：
 
-    index.html
+- 手机网络
+- 官方网站响应速度
+- 官方服务器状态
+- 数据量
 
-网页会读取：
+项目中的：
 
-    data.js
-    year.js
-    mark.js
+```text
+实测.png
+```
 
----
-
-# 十四、为什么使用 127.0.0.1:8000
-
-Android 浏览器直接打开：
-
-    file://
-
-格式的 HTML 时，有时会限制网页读取本地 JavaScript 文件。
-
-因此推荐：
-
-    python -m http.server 8000
-
-然后使用：
-
-    http://127.0.0.1:8000
-
-这样网页通过 HTTP 访问本地文件。
+是爬虫运行实测截图。
 
 ---
 
-# 十五、注意 http 和 https
+# 十二、第三步：确认 data.js
 
-正确：
+爬虫完成后会生成或更新：
 
-    http://127.0.0.1:8000
+```text
+data.js
+```
 
-错误：
+它是：
 
-    https://127.0.0.1:8000
+```text
+crawl_lzks.py
+```
 
-必须使用：
+获取的招生数据。
 
-    http://
+通常不需要手动修改。
 
 ---
 
-# 十六、停止服务器
+# 十三、第四步：更新 mark.js
+
+获得：
+
+```text
+year.js
+```
+
+所表示年份的最低分数线。
+
+例如：
+
+```text
+year.js = 2027
+```
+
+需要获得：
+
+```text
+2027 年最低分数线
+```
+
+建议从官方渠道获得，例如：
+
+```text
+广东省教育考试院官方网站
+广东省教育考试院官方微信公众号
+全国联招相关官方公告
+```
+
+可以使用手机浏览器查看官方数据。
+
+然后编辑：
+
+```bash
+nano mark.js
+```
+
+按照原文件的数据格式修改。
+
+保存：
+
+```text
+Ctrl + O
+```
+
+Enter。
+
+退出：
+
+```text
+Ctrl + X
+```
+
+---
+
+# 十四、第五步：准备 bar.xlsx
+
+需要准备：
+
+```text
+year.js - 1
+```
+
+年份的各院校分数线。
+
+例如：
+
+```text
+year.js = 2027
+```
+
+那么：
+
+```text
+bar.xlsx = 2026 年各院校分数线
+```
+
+---
+
+# 十五、如何制作 bar.xlsx
+
+从官方渠道下载上一年度各院校分数线 PDF。
+
+如果 PDF 是扫描版：
+
+```text
+官方 PDF
+↓
+OCR
+↓
+AI 整理
+↓
+Excel
+↓
+bar.xlsx
+```
+
+最终文件必须叫：
+
+```text
+bar.xlsx
+```
+
+并放在项目根目录。
+
+---
+
+# 十六、第六步：运行 bar.py
+
+确认：
+
+```text
+bar.py
+bar.xlsx
+```
+
+在同一个目录。
+
+运行：
+
+```bash
+python bar.py
+```
+
+程序会读取：
+
+```text
+year.js
+```
+
+计算：
+
+```text
+year.js - 1
+```
+
+然后把 `bar.xlsx` 中的数据加入：
+
+```text
+bar.js
+```
+
+---
+
+# 十七、bar.py 会保留往年数据
+
+例如原来的 `bar.js` 有：
+
+```text
+2024
+2025
+```
+
+现在：
+
+```text
+year.js = 2027
+```
+
+那么：
+
+```text
+bar.xlsx = 2026
+```
+
+运行：
+
+```bash
+python bar.py
+```
+
+之后应当保留：
+
+```text
+2024
+2025
+2026
+```
+
+不会删除以前的数据。
+
+---
+
+# 十八、bar.js 必须存在
+
+即使目前没有历史分数线，也不要删除：
+
+```text
+bar.js
+```
+
+必须保留这个文件。
+
+否则：
+
+```text
+index.html
+```
+
+可能无法正常使用。
+
+---
+
+# 十九、第七步：启动网站
+
+Termux 不使用 Windows 的：
+
+```text
+啟動網站.bat
+```
+
+在 Termux 中运行：
+
+```bash
+python -m http.server 8000
+```
+
+如果看到类似：
+
+```text
+Serving HTTP on 0.0.0.0 port 8000
+```
+
+说明服务器已经启动。
+
+---
+
+# 二十、浏览器访问
+
+打开 Android 浏览器。
+
+地址栏输入：
+
+```text
+http://127.0.0.1:8000
+```
+
+按 Enter。
+
+即可访问：
+
+```text
+index.html
+```
+
+---
+
+# 二十一、为什么使用 127.0.0.1:8000？
+
+直接打开：
+
+```text
+index.html
+```
+
+可能使用：
+
+```text
+file:///
+```
+
+部分浏览器会限制本地网页读取 JavaScript 文件。
+
+因此可能出现：
+
+```text
+网页可以打开
+但是没有数据
+```
+
+或者：
+
+```text
+数据加载失败
+```
+
+运行：
+
+```bash
+python -m http.server 8000
+```
+
+再访问：
+
+```text
+http://127.0.0.1:8000
+```
+
+网页就通过 HTTP 运行。
+
+---
+
+# 二十二、停止网站
 
 回到 Termux。
 
 按：
 
-    Ctrl + C
+```text
+Ctrl + C
+```
 
-即可停止。
-
-如果手机键盘没有 Ctrl，可以使用 Termux 的额外按键功能发送 Ctrl+C。
-
----
-
-# 十七、让 Termux 访问手机文件
-
-输入：
-
-    termux-setup-storage
-
-Android 会请求存储权限。
-
-允许。
-
-以后：
-
-    ~/storage/
-
-就是 Termux 可以访问的手机存储目录。
-
-Download 通常是：
-
-    ~/storage/downloads/
+即可停止 HTTP 服务。
 
 ---
 
-# 十八、把项目放到 Download
+# 二十三、以后每年更新
 
-推荐：
+假设下一年需要更新。
 
-    内部存储/
-    └── Download/
-        └── hmt-liankao-data/
-            ├── crawl_lzks.py
-            ├── index.html
-            ├── year.js
-            ├── mark.js
-            ├── 实测.png
-            └── data.js
+## ① 修改 year.js
 
-Termux 中进入：
+```bash
+nano year.js
+```
 
-    cd ~/storage/downloads/hmt-liankao-data
-
-检查：
-
-    ls
+修改为实际年份。
 
 ---
 
-# 十九、从手机文件夹运行
+## ② 运行爬虫
 
-如果项目在 Download：
-
-    cd ~/storage/downloads/hmt-liankao-data
-
-运行爬虫：
-
-    python crawl_lzks.py
-
-完成后：
-
-    python -m http.server 8000
-
-浏览器打开：
-
-    http://127.0.0.1:8000
+```bash
+python crawl_lzks.py
+```
 
 ---
 
-# 二十、手机完整操作
-
-第一次：
-
-    pkg update
-    pkg upgrade
-    pkg install python git
-
-下载：
-
-    git clone https://github.com/yatfan0513/hmt-liankao-data.git
-
-进入：
-
-    cd hmt-liankao-data
-
-安装：
-
-    pip install requests beautifulsoup4 tqdm
-
-运行：
-
-    python crawl_lzks.py
-
-启动网页：
-
-    python -m http.server 8000
-
-浏览器：
-
-    http://127.0.0.1:8000
-
----
-
-# 二十一、以后更新数据
-
-进入项目：
-
-    cd ~/hmt-liankao-data
-
-运行：
-
-    python crawl_lzks.py
-
-等待完成。
+## ③ 确认 data.js
 
 确认：
 
-    data.js
+```text
+data.js
+```
 
-已经生成。
+已经更新。
 
-然后检查：
+---
 
-    year.js
+## ④ 更新 mark.js
 
-是否需要修改。
-
-从广东省教育考试院官方渠道确认最新最低分数线。
+从官方渠道获得当前年份最低分数线。
 
 修改：
 
-    mark.js
-
-最后：
-
-    python -m http.server 8000
-
-浏览器打开：
-
-    http://127.0.0.1:8000
+```bash
+nano mark.js
+```
 
 ---
 
-# 二十二、常见问题
+## ⑤ 准备 bar.xlsx
 
-## Python 找不到
+计算：
 
-输入：
+```text
+year.js - 1
+```
 
-    pkg install python
+获取这个年份的各院校分数线 PDF。
 
----
+扫描版 PDF：
 
-## pip 找不到
-
-输入：
-
-    python -m pip install requests beautifulsoup4 tqdm
-
----
-
-## 缺少 requests
-
-    pip install requests
-
----
-
-## 缺少 bs4
-
-    pip install beautifulsoup4
+```text
+PDF
+↓
+OCR
+↓
+AI
+↓
+Excel
+↓
+bar.xlsx
+```
 
 ---
 
-## 缺少 tqdm
-
-    pip install tqdm
-
----
-
-## data.js 没有生成
-
-检查当前目录：
-
-    pwd
-
-然后：
-
-    ls
-
-确认存在：
-
-    crawl_lzks.py
-
-再运行：
-
-    python crawl_lzks.py
-
----
-
-## 网页没有数据
+## ⑥ 更新 bar.js
 
 运行：
 
-    python -m http.server 8000
+```bash
+python bar.py
+```
+
+---
+
+## ⑦ 启动网站
+
+```bash
+python -m http.server 8000
+```
+
+浏览器访问：
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+# 二十四、第一次完整命令
+
+如果刚安装好 Termux，可以按照下面执行：
+
+```bash
+pkg update && pkg upgrade
+pkg install python
+pkg install git
+git clone https://github.com/yatfan0513/hmt-liankao-data.git
+cd hmt-liankao-data
+python -m pip install requests beautifulsoup4 tqdm pandas openpyxl
+```
+
+然后运行：
+
+```bash
+python crawl_lzks.py
+```
+
+修改：
+
+```text
+year.js
+mark.js
+```
+
+准备：
+
+```text
+bar.xlsx
+```
+
+再运行：
+
+```bash
+python bar.py
+```
+
+最后：
+
+```bash
+python -m http.server 8000
+```
 
 浏览器打开：
 
-    http://127.0.0.1:8000
+```text
+http://127.0.0.1:8000
+```
 
 ---
 
-## 127.0.0.1:8000 打不开
+# 二十五、常见问题
 
-检查 Termux 是否仍然显示：
+## 1. Python 找不到
 
-    Serving HTTP on 0.0.0.0 port 8000 ...
+运行：
 
-如果没有，重新运行：
+```bash
+pkg install python
+```
 
-    python -m http.server 8000
+然后：
 
-确认浏览器输入：
-
-    http://127.0.0.1:8000
-
-而不是：
-
-    https://127.0.0.1:8000
+```bash
+python --version
+```
 
 ---
 
-## year.js 修改后没有变化
+## 2. Git 找不到
 
-保存 `year.js` 后刷新网页。
+运行：
 
----
-
-## mark.js 修改后没有变化
-
-保存 `mark.js` 后刷新网页。
+```bash
+pkg install git
+```
 
 ---
 
-# 二十三、实测
+## 3. 找不到 crawl_lzks.py
 
-项目中的：
+运行：
 
-    实测.png
+```bash
+cd ~/hmt-liankao-data
+ls
+```
 
-是爬虫运行的实际截图。
+确认存在：
 
-目前实测运行时间：
-
-    约 1 分钟
-
-实际运行时间可能有所不同。
+```text
+crawl_lzks.py
+```
 
 ---
 
-# 二十四、注意
+## 4. bar.py 找不到 bar.xlsx
 
-- 爬虫需要网络；
-- 运行爬虫时不要关闭 Termux；
-- 运行 HTTP 服务器时不要关闭 Termux；
-- `data.js` 由爬虫自动生成；
-- `year.js` 控制网页显示年份；
-- `mark.js` 控制网页显示最低分数线；
-- 最低分数线需要从广东省教育考试院官方渠道确认；
-- `index.html`、`year.js`、`mark.js`、`data.js` 应位于同一个项目目录；
-- 本地服务器使用完成后按 `Ctrl+C` 停止。
+确认：
 
-本项目用于港澳台联考招生数据整理、查询、学习和研究。
+```text
+bar.py
+bar.xlsx
+```
 
-标签信息来自网络，若有误可手动修改 `index.html` 。
+在同一个目录。
+
+---
+
+## 5. 网页没有数据
+
+运行：
+
+```bash
+python -m http.server 8000
+```
+
+然后访问：
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+## 6. 没有历史分数线
+
+不要删除：
+
+```text
+bar.js
+```
+
+保留空的有效数据文件即可。
+
+以后获得官方数据后制作：
+
+```text
+bar.xlsx
+```
+
+然后运行：
+
+```bash
+python bar.py
+```
