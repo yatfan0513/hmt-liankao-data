@@ -6,7 +6,7 @@
   文件说明：
     本文件是一个完整的单页 Web 应用，用于查询全国联合招生（港澳台侨联考）
     的院校信息、专业信息、录取分数线及分省统计数据。
-  
+
   数据来源：
     - index.html        ：本文件，包含 HTML 结构、CSS 样式和 JavaScript 逻辑
     - data.js           ：院校数据（allSchools）和专业数据（allMajors），
@@ -15,17 +15,20 @@
                           由 bar.py 从 bar.xlsx 读取并生成，支持多年份
     - year.js           ：年份变量（currentYear），修改此文件可全局更新年份
                           （只需改这一处即可更新全站年份）
-  
+    - tag.js            ：标签数据（schoolTagsData / tagSchoolMap / tagOrder），
+                          院校 985 / 211 工程标签均在此文件中维护
+
   标签数据说明：
     - schoolTagsData    ：标签主映射，结构为 { 分类名: { 标签名: [院校名列表] } }
                           所有院校名称必须与 data.js 中的 allSchools 完全一致
     - tagSchoolMap      ：扁平化映射，结构为 { 标签名: [院校名列表] }
                           与 schoolTagsData 保持完全同步，用于快速查找
-    - tagOrder          ：标签在页面筛选器中的显示顺序（60个标签）
-  
+    - tagOrder          ：标签在页面筛选器中的显示顺序
+    （以上三项均位于 tag.js）
+
   修改说明：
     - 年份修改：只需修改 year.js 中的 currentYear 变量，全站年份自动更新
-    - 标签修改：同步修改 schoolTagsData 和 tagSchoolMap 中的对应条目（两处必须一致）
+    - 标签修改：修改 tag.js 中的对应条目（schoolTagsData 与 tagSchoolMap 必须一致）
     - 院校/专业数据：修改 data.js 中的 allSchools 和 allMajors
     - 注意事项：院校名称必须与 data.js 完全一致，含括号版本也要一致
               （如"华北电力大学(北京)"和"华北电力大学(保定)"）
@@ -117,11 +120,23 @@ body {
     min-height: 500px;
 }
 
+/* ============================================
+   搜索栏（.search-bar）
+   说明：改用 margin 替代 gap，兼容 Chrome 78（不支持 flex gap）
+   ============================================ */
 .search-bar {
     display: flex;
-    gap: 10px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+}
+
+.search-bar > * {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.search-bar > *:last-child {
+    margin-right: 0;
 }
 
 .search-input {
@@ -171,30 +186,45 @@ body {
     box-shadow: 0 4px 15px rgba(107, 70, 139, 0.4);
 }
 
+/* ============================================
+   统计信息区域（.stats）
+   说明：
+     - 用 justify-content: space-between 实现均匀分布
+     - 两端对齐，一排展示（不再换行）
+     - 每个 .stat-item 用 flex:1 等宽，padding 提供水平间距
+   ============================================ */
 .stats {
     background: #f8f5fc;
-    padding: 15px;
+    padding: 12px 5px;
     border-radius: 8px;
     margin-bottom: 20px;
     display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: nowrap;
 }
 
 .stat-item {
+    flex: 1 1 0;
+    min-width: 0;
     text-align: center;
+    padding: 0 5px;
 }
 
 .stat-number {
     font-size: 24px;
     font-weight: bold;
     color: #6B468B;
+    line-height: 1.2;
 }
 
 .stat-label {
     font-size: 12px;
     color: #666;
     margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .schools-grid {
@@ -323,12 +353,19 @@ body {
     background: #f0e8f8;
 }
 
+/* ============================================
+   分页控件（.pagination）
+   说明：改用 margin 替代 gap，兼容 Chrome 78
+   ============================================ */
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 5px;
     margin-top: 20px;
     flex-wrap: wrap;
+}
+
+.pagination > * {
+    margin: 3px;
 }
 
 .page-btn {
@@ -553,9 +590,25 @@ body {
     .container { padding: 0 10px; margin: 10px auto; }
     .tabs { flex-wrap: wrap; }
     .tab { flex: none; width: 50%; padding: 12px 8px; font-size: 14px; }
+
+    /* 搜索栏：纵向排列，用 margin 提供间距（兼容 Chrome 78） */
     .search-bar { flex-direction: column; }
+    .search-bar > * {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .search-bar > *:last-child {
+        margin-bottom: 0;
+    }
     .search-input, .filter-select, .search-btn { width: 100%; min-width: auto; }
-    .stats { flex-direction: column; gap: 10px; }
+
+    /* 统计信息：保持一排、均匀分布、两端对齐 */
+    .stats { padding: 10px 3px; }
+    .stat-item { padding: 0 3px; }
+    .stat-number { font-size: 18px; }
+    .stat-label { font-size: 11px; }
+
     .schools-grid { grid-template-columns: 1fr; }
     .school-card { padding: 12px; }
     .school-header { flex-direction: column; gap: 5px; }
@@ -583,7 +636,13 @@ body {
     .header p { font-size: 11px; }
     .tab { font-size: 13px; padding: 10px 5px; }
     .search-input, .filter-select, .search-btn { padding: 10px; font-size: 13px; }
-    .stat-number { font-size: 20px; }
+
+    /* 统计信息：进一步紧凑 */
+    .stats { padding: 8px 2px; }
+    .stat-item { padding: 0 2px; }
+    .stat-number { font-size: 16px; }
+    .stat-label { font-size: 10px; }
+
     .school-name { font-size: 14px; }
     .school-code { font-size: 11px; }
     .tag { font-size: 10px; padding: 1px 5px; }
@@ -610,6 +669,7 @@ body {
     width: 100%;
 }
 
+/* 兼容性：第二个 768px 媒体查询块中同样使用 padding 替代 gap */
 @media (max-width: 768px) {
     .header h1 {
         font-size: 18px;
@@ -628,11 +688,16 @@ body {
     }
     
     .stats {
-        gap: 15px;
+        padding: 10px 3px;
     }
-    
+    .stat-item {
+        padding: 0 3px;
+    }
     .stat-number {
-        font-size: 20px;
+        font-size: 18px;
+    }
+    .stat-label {
+        font-size: 11px;
     }
     
     .majors-table {
@@ -678,7 +743,6 @@ body {
     display: block;
 }
 
-/* 标签样式 */
 /* 标签样式 */
 .school-tag {
     display: inline-block;
@@ -729,14 +793,7 @@ body {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -797,25 +854,20 @@ body {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 
 /* ============================================
    自定义下拉选择器（Custom Select）样式
-   功能：替代原生 <select>，提供统一视觉与交互
-   - .cs-trigger ：显示当前选中项的按钮区域
-   - .cs-menu    ：展开后的选项面板
-   - .cs-option  ：单个选项
-   - .cs-open    ：展开状态
    ============================================ */
 custom-select {
     display: inline-block;
@@ -942,9 +994,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
         min-width: 0;
     }
 }
-/* ============================================
-   样式定义结束
-   ============================================ */
 </style>
 </head>
 <body>
@@ -952,17 +1001,17 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 
     <!-- ============================================
    页面头部区域
-   功能：显示标题（年份由 year.js 动态填充）和数据来源链接
    ============================================ --><div class="header">
     <h1><span class="year-text">2026</span>年联合招生院校专业查询</h1>
     <p>数据收集自<a href="https://www.eeagd.edu.cn/lzks/main.jsp" target="_blank" rel="noopener noreferrer" style="color:white;text-decoration:underline;">https://www.eeagd.edu.cn/lzks/main.jsp</a>，如有偏差以官方为准</p>
 </div>
 
-<div style="max-width: 1200px; margin: 0 auto; padding: 15px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-    <button onclick="showScoreLineModal()" style="padding: 12px 30px; background: linear-gradient(135deg, #6B468B 0%, #8B5FB0 100%); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(107, 70, 139, 0.3); transition: transform 0.2s;">
+<!-- 顶部按钮：使用 margin 提供间距（兼容 Chrome 78） -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 15px; display: flex; justify-content: center; flex-wrap: wrap;">
+    <button onclick="showScoreLineModal()" style="margin: 5px; padding: 12px 30px; background: linear-gradient(135deg, #6B468B 0%, #8B5FB0 100%); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(107, 70, 139, 0.3); transition: transform 0.2s;">
         📊 最低分数线
     </button>
-    <button onclick="showProvinceStatsModal()" style="padding: 12px 30px; background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3); transition: transform 0.2s;">
+    <button onclick="showProvinceStatsModal()" style="margin: 5px; padding: 12px 30px; background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3); transition: transform 0.2s;">
         📈 分省统计
     </button>
 </div>
@@ -970,13 +1019,11 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 
     <!-- ============================================
    主容器（.container）
-   功能：包裹标签页导航、搜索栏、统计区、院校/专业列表
    ============================================ --><div class="container">
     
     
         <!-- ============================================
    标签页导航（.tabs）
-   功能：切换「院校查询」和「专业查询」两个标签页
    ============================================ --><div class="tabs">
         <div class="tab active" onclick="switchTab('school')">🏫 院校查询</div>
         <div class="tab" onclick="switchTab('major')">📚 专业查询</div>
@@ -985,18 +1032,10 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
     
         <!-- ============================================
    院校查询标签页（#schoolTab）
-   功能：包含搜索栏、筛选器、统计信息、院校卡片列表、分页控件
    ============================================ --><div class="tab-content" id="schoolTab">
         
             <!-- ============================================
    搜索栏（.search-bar）
-   功能：提供多维度筛选
-   - 文本搜索：按院校名称或代码搜索
-   - 省份筛选：按招生省份过滤
-   - 批次筛选：本科(11) / 预科(19)
-   - 类别筛选：普通类(00) / 体育类(30) / 艺术类(80)
-   - 科类筛选：文史类(1) / 理工类(2)
-   - 标签筛选：按院校标签过滤（如985、211等）
    ============================================ --><div class="search-bar">
             <input type="text" class="search-input" id="schoolSearch" placeholder="搜索院校名称或代码..." oninput="searchSchools()">
             <custom-select class="filter-select" id="schoolProvince" onchange="searchSchools()">
@@ -1026,11 +1065,7 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
         
             <!-- ============================================
    统计信息区域（#schoolStats）
-   功能：实时显示筛选结果统计
-   - totalSchools：全部招生院校数
-   - totalMajorsCount：全部专业总数
-   - totalPlans：全部招生人数
-   - filteredCount：当前筛选结果数
+   一排均匀分布，两端对齐
    ============================================ --><div class="stats" id="schoolStats">
             <div class="stat-item">
                 <div class="stat-number" id="totalSchools">0</div>
@@ -1053,8 +1088,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
         
                 <!-- ============================================
    院校卡片列表（#schoolsGrid）
-   功能：以卡片形式展示院校信息，动态渲染
-   每张卡片包含：院校名称、代码、省份、批次、类别、科类、标签
    ============================================ --><div class="schools-grid" id="schoolsGrid">
             
         </div>
@@ -1062,7 +1095,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
         
                 <!-- ============================================
    院校列表分页控件（#schoolPagination）
-   功能：分页浏览院校列表
    ============================================ --><div class="pagination" id="schoolPagination">
             
         </div>
@@ -1071,7 +1103,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
     
         <!-- ============================================
    专业查询标签页（#majorTab）
-   功能：包含搜索栏、筛选器、专业数据表格、分页控件
    ============================================ --><div class="tab-content" id="majorTab" style="display:none;">
         <div class="search-bar">
             <input type="text" class="search-input" id="majorSearch" placeholder="搜索专业名称或院校..." oninput="searchMajors()">
@@ -1110,8 +1141,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
             
             <!-- ============================================
    专业数据表格（#majorsTable）
-   功能：以表格形式展示专业信息
-   列：专业代码、专业名称、院校名称、批次、类别、科类、省份
    ============================================ --><table class="majors-table" id="majorsTable">
                 <thead>
                     <tr>
@@ -1133,7 +1162,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
         
                 <!-- ============================================
    专业列表分页控件（#majorPagination）
-   功能：分页浏览专业列表
    ============================================ --><div class="pagination" id="majorPagination">
             
         </div>
@@ -1143,8 +1171,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 
 <!-- ============================================
    院校详情弹窗（#schoolModal）
-   功能：点击院校卡片时弹出详细信息
-   包含：院校基本信息、标签列表、专业列表、分省录取统计
    ============================================ --><div class="modal-overlay" id="schoolModal">
     <div class="modal">
         <div class="modal-header">
@@ -1161,8 +1187,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 
 <!-- ============================================
    显示专业列表弹窗（#majorsModal）
-   功能：点击院校卡片中的「查看专业」按钮时弹出
-   显示该院校所有招生专业列表
    ============================================ --><div class="modal-overlay" id="majorsModal">
     <div class="modal">
         <div class="modal-header">
@@ -1181,8 +1205,6 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 
 <!-- ============================================
    专业详情弹窗（#majorDetailModal）
-   功能：点击专业表格中的专业名称时弹出
-   显示该专业的详细信息
    ============================================ --><div class="modal-overlay" id="majorDetailModal">
     <div class="modal">
         <div class="modal-header">
@@ -1199,18 +1221,13 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script src="data.js"></script>
+<script src="tag.js"></script>
 <script src="bar.js"></script>
 <script src="mark.js"></script>
 <script>
 // ============================================
 // 年份动态加载器（三层容错机制）
 // ============================================
-// 第一层：动态加载 year.js 并带时间戳参数（?t=毫秒数）
-//         防止浏览器缓存导致年份不更新
-// 第二层：页面底部兜底脚本（Script #3）确保年份最终被替换
-// 第三层：HTML 中 <span class="year-text"> 默认值作为最终兜底
-// ============================================
-// 动态加载 year.js（带时间戳防止缓存），加载完成后自动更新年份
 (function() {
     var script = document.createElement('script');
     script.src = 'year.js?t=' + new Date().getTime();
@@ -1242,84 +1259,23 @@ custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
 })();
 </script><script>
 // ============================================
-// ============================================
 // 第二层年份更新（兜底）
 // ============================================
-// 功能：确保无论第一层动态加载器是否执行成功，
-//       年份都会被正确替换到所有 .year-text 元素和 document.title 中
-// 说明：此脚本在 year.js 加载完成后执行，读取 currentYear 变量
-// ============================================
-// 第二层年份更新（兜底）
-// 功能：确保无论动态加载器是否执行成功，年份都会被正确替换
-// ============================================
-// Dynamically update year from year.js
 (function() {
     var y = (typeof currentYear !== "undefined") ? currentYear : "2026";
-    // Update all .year-text spans
     document.querySelectorAll('.year-text').forEach(function(el) {
         el.textContent = y;
     });
-    // Update document title
     document.title = y + "年联合招生院校专业查询";
 })();
 </script>
 <script>
 // ============================================
 // 数据定义区域
+// 说明：标签数据（schoolTagsData / tagSchoolMap / tagOrder）
+//       已分离至 tag.js 中，修改标签请直接编辑 tag.js
 // ============================================
-// 外部数据引用说明：
-//   allSchools      ：来自 data.js，包含所有院校的基本信息（共395所）
-//                     每条记录包含：code(院校代码), name(院校名称), province(省份),
-//                     city(城市), pc(批次), jhlb(类别), zykl(科类) 等字段
-//   allMajors       ：来自 data.js，包含所有专业的详细信息
-//                     每条记录包含：majorCode(专业代码), majorName(专业名称),
-//                     schoolName(院校名称), province(省份) 等字段
-//   scorelineData   ：来自 mark.js，包含各批次录取分数线
-//   historyScoresData ：来自 bar.js，包含各院校多年份历史分数线数据
-//                     包含：本科批次（普通类/艺术类/体育类）和预科批次的分数线
-// ============================================
-// Data imported from data.js (allSchools, allMajors)
 
-// ============================================
-// 院校标签主映射（schoolTagsData）
-// ============================================
-// 结构：{ 分类名: { 标签名: [院校名列表] } }
-
-var schoolTagsData = {"综合类":{"985工程":["北京大学","中国人民大学","清华大学","北京航空航天大学","北京理工大学","中国农业大学","北京师范大学","中央民族大学","南开大学","天津大学","大连理工大学","吉林大学","哈尔滨工业大学","复旦大学","同济大学","上海交通大学","华东师范大学","南京大学","东南大学","浙江大学","中国科学技术大学","厦门大学","山东大学","中国海洋大学","武汉大学","华中科技大学","中南大学","中山大学","华南理工大学","四川大学","重庆大学","电子科技大学","西安交通大学","西北工业大学","西北农林科技大学","兰州大学","东北大学","湖南大学"],"211工程":["北京大学","中国人民大学","清华大学","北京交通大学","北京工业大学","北京航空航天大学","北京理工大学","北京科技大学","北京化工大学","北京邮电大学","中国农业大学","北京林业大学","北京中医药大学","北京师范大学","北京外国语大学","中国传媒大学","中央财经大学","对外经济贸易大学","北京体育大学","中央音乐学院","中央民族大学","中国政法大学","华北电力大学(北京)","华北电力大学(保定)","中国矿业大学(北京)","中国石油大学(北京)","中国地质大学(北京)","南开大学","天津大学","河北工业大学","太原理工大学","内蒙古大学","辽宁大学","大连理工大学","东北大学","大连海事大学","吉林大学","东北师范大学","哈尔滨工业大学","哈尔滨工程大学","东北林业大学","复旦大学","同济大学","上海交通大学","华东理工大学","东华大学","华东师范大学","上海外国语大学","上海财经大学","上海大学","南京大学","苏州大学","东南大学","南京航空航天大学","南京理工大学","中国矿业大学","河海大学","江南大学","南京农业大学","中国药科大学","南京师范大学","浙江大学","安徽大学","中国科学技术大学","合肥工业大学","厦门大学","福州大学","南昌大学","山东大学","中国海洋大学","中国石油大学(华东)","郑州大学","武汉大学","华中科技大学","中国地质大学(武汉)","武汉理工大学","华中农业大学","华中师范大学","中南财经政法大学","湖南大学","中南大学","湖南师范大学","中山大学","暨南大学","华南理工大学","华南师范大学","广西大学","海南大学","四川大学","重庆大学","西南交通大学","电子科技大学","西南大学","西南财经大学","贵州大学","云南大学","西北大学","西安交通大学","西北工业大学","西安电子科技大学","长安大学","西北农林科技大学","陕西师范大学","兰州大学","四川农业大学"]}};;;;
-
-// ============================================
-// 扁平化标签映射（tagSchoolMap）
-// 结构：{ 标签名: [院校名列表] }
-// 说明：
-// ============================================
-// 标签扁平化映射（tagSchoolMap）
-// ============================================
-// 结构：{ 标签名: [院校名列表] }
-// 说明：
-//   - 与 schoolTagsData 保持完全同步（60个标签）
-//   - 用途：根据院校名称快速查找其所属的所有标签
-//   - 由程序从 schoolTagsData 自动生成
-// 注意：
-//   - 修改 schoolTagsData 后必须同步更新此处
-//   - 两处数据不一致会导致标签筛选功能异常
-// ============================================
-var tagSchoolMap = {"985工程":["北京大学","中国人民大学","清华大学","北京航空航天大学","北京理工大学","中国农业大学","北京师范大学","中央民族大学","南开大学","天津大学","大连理工大学","吉林大学","哈尔滨工业大学","复旦大学","同济大学","上海交通大学","华东师范大学","南京大学","东南大学","浙江大学","中国科学技术大学","厦门大学","山东大学","中国海洋大学","武汉大学","华中科技大学","中南大学","中山大学","华南理工大学","四川大学","重庆大学","电子科技大学","西安交通大学","西北工业大学","西北农林科技大学","兰州大学","东北大学","湖南大学"],"211工程":["北京大学","中国人民大学","清华大学","北京交通大学","北京工业大学","北京航空航天大学","北京理工大学","北京科技大学","北京化工大学","北京邮电大学","中国农业大学","北京林业大学","北京中医药大学","北京师范大学","北京外国语大学","中国传媒大学","中央财经大学","对外经济贸易大学","北京体育大学","中央音乐学院","中央民族大学","中国政法大学","华北电力大学(北京)","华北电力大学(保定)","中国矿业大学(北京)","中国石油大学(北京)","中国地质大学(北京)","南开大学","天津大学","河北工业大学","太原理工大学","内蒙古大学","辽宁大学","大连理工大学","东北大学","大连海事大学","吉林大学","东北师范大学","哈尔滨工业大学","哈尔滨工程大学","东北林业大学","复旦大学","同济大学","上海交通大学","华东理工大学","东华大学","华东师范大学","上海外国语大学","上海财经大学","上海大学","南京大学","苏州大学","东南大学","南京航空航天大学","南京理工大学","中国矿业大学","河海大学","江南大学","南京农业大学","中国药科大学","南京师范大学","浙江大学","安徽大学","中国科学技术大学","合肥工业大学","厦门大学","福州大学","南昌大学","山东大学","中国海洋大学","中国石油大学(华东)","郑州大学","武汉大学","华中科技大学","中国地质大学(武汉)","武汉理工大学","华中农业大学","华中师范大学","中南财经政法大学","湖南大学","中南大学","湖南师范大学","中山大学","暨南大学","华南理工大学","华南师范大学","广西大学","海南大学","四川大学","重庆大学","西南交通大学","电子科技大学","西南大学","西南财经大学","贵州大学","云南大学","西北大学","西安交通大学","西北工业大学","西安电子科技大学","长安大学","西北农林科技大学","陕西师范大学","兰州大学","四川农业大学"]};;;
-
-// ============================================
-// 标签排序顺序（tagOrder）
-// ============================================
-// 说明：定义标签在页面筛选器下拉菜单中的显示顺序
-// 定义标签在页面筛选器下拉菜单中的显示顺序
-
-// ============================================
-var tagOrder = ["985工程", "211工程"];;;
-// 根据学校名称获取标签（从schoolTagsData反查）
-
-// ============================================
-// 获取院校所属标签列表
-// 参数：schoolName - 院校名称
-// 返回：该院校所属的所有标签名称数组
-// ============================================
 function getSchoolTags(schoolName) {
     var result = {};
     for (var category in schoolTagsData) {
@@ -1335,18 +1291,9 @@ function getSchoolTags(schoolName) {
     return result;
 }
 
-// 根据分类获取CSS类名
-
-// ============================================
-// 获取标签对应的 CSS 类名
-// 参数：tagName - 标签名称
-// 返回：对应的 CSS 类名（用于样式分类）
-// ============================================
 function getTagClass(category) {
     return 'tag-level';
 }
-
-
 
 var currentTab = 'school';
 var schoolPage = 1;
@@ -1355,20 +1302,17 @@ var pageSize = 20;
 var filteredSchools = [];
 var filteredMajors = [];
 
-// 当前筛选条件（用于计算统计和院校卡片显示）
 var currentFilterKeyword = '';
 var currentFilterProvince = '';
 var currentFilterPc = '';
 var currentFilterJhlb = '';
 var currentFilterZykl = '';
 
-// 初始化
 window.onload = function() {
     initProvinces();
     searchSchools();
     searchMajors();
     
-    // 返回顶部按钮
     window.onscroll = function() {
         var btn = document.getElementById('backToTop');
         if (window.scrollY > 300) {
@@ -1379,13 +1323,6 @@ window.onload = function() {
     };
 };
 
-// 初始化省份下拉框
-
-// ============================================
-// 初始化省份筛选下拉框
-// 功能：从 allSchools 数据中提取所有唯一省份，
-//       填充到省份筛选下拉框中
-// ============================================
 function initProvinces() {
     var provinces = new Set();
     allSchools.forEach(function(s) {
@@ -1394,7 +1331,6 @@ function initProvinces() {
         }
     });
     
-    // 初始化标签筛选
     var tagSelect = document.getElementById('schoolTag');
     if (tagSelect) {
         var allTags = [];
@@ -1403,11 +1339,10 @@ function initProvinces() {
                 allTags.push(tagName);
             }
         }
-        // 按标签地位排序
-        var tagOrder = ["985工程", "211工程"];;
+        var localTagOrder = (typeof tagOrder !== "undefined") ? tagOrder : [];
         allTags.sort(function(a, b) {
-            var indexA = tagOrder.indexOf(a);
-            var indexB = tagOrder.indexOf(b);
+            var indexA = localTagOrder.indexOf(a);
+            var indexB = localTagOrder.indexOf(b);
             if (indexA === -1) indexA = 999;
             if (indexB === -1) indexB = 999;
             return indexA - indexB;
@@ -1420,7 +1355,6 @@ function initProvinces() {
         });
     }
     
-    // 按国家行政区划代码排序
     var provinceCode = {
         '北京市': '110000', '天津市': '120000', '河北省': '130000',
         '山西省': '140000', '内蒙古自治区': '150000', '辽宁省': '210000',
@@ -1452,13 +1386,6 @@ function initProvinces() {
     });
 }
 
-// 切换标签页
-
-// ============================================
-// 切换标签页
-// 参数：tabName - 标签页名称 ("school" 或 "major")
-// 功能：切换院校查询/专业查询标签页的显示状态
-// ============================================
 function switchTab(tab) {
     currentTab = tab;
     
@@ -1474,13 +1401,6 @@ function switchTab(tab) {
     document.getElementById('majorTab').style.display = tab === 'major' ? 'block' : 'none';
 }
 
-// 搜索院校
-
-// ============================================
-// 院校搜索与筛选
-// 功能：根据搜索关键词、省份、批次、类别、科类、标签
-//       等多个条件筛选院校数据，更新统计信息和渲染结果
-// ============================================
 function searchSchools() {
     var keyword = document.getElementById('schoolSearch').value.toLowerCase();
     var province = document.getElementById('schoolProvince').value;
@@ -1490,17 +1410,14 @@ function searchSchools() {
     var tag = document.getElementById('schoolTag').value;
     
     filteredSchools = allSchools.filter(function(s) {
-        // 关键词搜索
         if (keyword && s.name.toLowerCase().indexOf(keyword) === -1 && s.code.indexOf(keyword) === -1) {
             return false;
         }
         
-        // 省份筛选
         if (province && s.location !== province) {
             return false;
         }
         
-        // 标签筛选
         if (tag) {
             var schoolTagsObj = getSchoolTags(s.name);
             var hasTag = false;
@@ -1515,7 +1432,6 @@ function searchSchools() {
             }
         }
         
-        // 批次、类别、科类筛选（只要有一条记录符合就显示）
         if (pc || jhlb || zykl) {
             var hasMatch = s.records.some(function(r) {
                 if (pc && r.pc !== pc) return false;
@@ -1529,51 +1445,31 @@ function searchSchools() {
         return true;
     });
     
-    // 保存当前筛选条件到全局
     currentFilterKeyword = keyword;
     currentFilterProvince = province;
     currentFilterPc = pc;
     currentFilterJhlb = jhlb;
     currentFilterZykl = zykl;
     
-    // 更新统计
     updateSchoolStats();
     
     schoolPage = 1;
     renderSchools();
 }
-// 根据标签筛选院校
 
-// ============================================
-// 按标签筛选院校
-// 参数：tagValue - 选中的标签值
-// 功能：当用户选择特定标签时，筛选出属于该标签的院校
-// ============================================
 function filterByTag(tagName) {
-    // 切换到院校查询标签
     switchTab('school');
-    // 设置标签筛选
     document.getElementById('schoolTag').value = tagName;
-    // 执行筛选
     searchSchools();
-    // 滚动到顶部
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-
-// 更新院校统计
-
-// ============================================
-// 更新院校统计信息
-// 功能：更新页面上的招生院校数、专业总数、招生人数、筛选结果数
-// ============================================
 function updateSchoolStats() {
     document.getElementById('totalSchools').textContent = filteredSchools.length;
     
     var totalMajors = 0;
     var totalPlans = 0;
     filteredSchools.forEach(function(s) {
-        // 只计算符合当前筛选条件的记录
         var pc = document.getElementById('schoolPc').value;
         var jhlb = document.getElementById('schoolJhlb').value;
         var zykl = document.getElementById('schoolZykl').value;
@@ -1592,12 +1488,6 @@ function updateSchoolStats() {
     document.getElementById('filteredCount').textContent = filteredSchools.length;
 }
 
-// 渲染院校卡片
-
-// ============================================
-// 渲染院校列表
-// 功能：将筛选后的院校数据渲染为院校卡片，支持分页
-// ============================================
 function renderSchools() {
     var grid = document.getElementById('schoolsGrid');
     var start = (schoolPage - 1) * pageSize;
@@ -1612,7 +1502,6 @@ function renderSchools() {
     
     var html = '';
     pageData.forEach(function(s) {
-        // 计算总专业数和总计划数
         var totalMajors = 0;
         var totalPlans = 0;
         var hasYuke = false;
@@ -1621,13 +1510,11 @@ function renderSchools() {
         var hasWen = false;
         var hasLi = false;
         
-        // 获取当前筛选条件
         var curPc = document.getElementById('schoolPc').value;
         var curJhlb = document.getElementById('schoolJhlb').value;
         var curZykl = document.getElementById('schoolZykl').value;
         
         s.records.forEach(function(r) {
-            // 只计算符合筛选条件的记录
             var match = true;
             if (curPc && r.pc !== curPc) match = false;
             if (curJhlb && r.jhlb !== curJhlb) match = false;
@@ -1638,7 +1525,6 @@ function renderSchools() {
                 totalPlans += parseInt(r.plan_count);
             }
             
-            // 标签还是显示所有的，让用户知道这学校还有其他类别
             if (r.pc === '19') hasYuke = true;
             if (r.jhlb === '30') hasTy = true;
             if (r.jhlb === '80') hasYs = true;
@@ -1663,7 +1549,6 @@ function renderSchools() {
         if (hasWen) html += '<span class="tag wen">文史</span>';
         if (hasLi) html += '<span class="tag li">理工</span>';
         
-        // 添加高校标签（全部显示）
         var allSchoolTags = getSchoolTags(s.name);
         for (var category in allSchoolTags) {
             var tags = allSchoolTags[category];
@@ -1679,7 +1564,6 @@ function renderSchools() {
     
     grid.innerHTML = html;
     
-    // 渲染分页
     renderPagination('schoolPagination', filteredSchools.length, schoolPage, function(p) {
         schoolPage = p;
         renderSchools();
@@ -1687,13 +1571,6 @@ function renderSchools() {
     });
 }
 
-// 搜索专业
-
-// ============================================
-// 专业搜索与筛选
-// 功能：根据搜索关键词、省份、批次、类别、科类等多个条件
-//       筛选专业数据，更新统计信息和渲染结果
-// ============================================
 function searchMajors() {
     var keyword = document.getElementById('majorSearch').value.toLowerCase();
     var province = document.getElementById('majorProvince').value;
@@ -1702,29 +1579,24 @@ function searchMajors() {
     var zykl = document.getElementById('majorZykl').value;
     
     filteredMajors = allMajors.filter(function(m) {
-        // 关键词搜索
         if (keyword && m.major_name.toLowerCase().indexOf(keyword) === -1 && 
             m.school_name.toLowerCase().indexOf(keyword) === -1 &&
             m.major_code.indexOf(keyword) === -1) {
             return false;
         }
         
-        // 省份筛选
         if (province && m.location !== province) {
             return false;
         }
         
-        // 批次筛选
         if (pc && m.pc !== pc) {
             return false;
         }
         
-        // 类别筛选
         if (jhlb && m.jhlb !== jhlb) {
             return false;
         }
         
-        // 科类筛选
         if (zykl && m.zykl !== zykl) {
             return false;
         }
@@ -1732,7 +1604,6 @@ function searchMajors() {
         return true;
     });
     
-    // 更新统计
     document.getElementById('majorTotal').textContent = allMajors.length;
     document.getElementById('majorFiltered').textContent = filteredMajors.length;
     
@@ -1740,12 +1611,6 @@ function searchMajors() {
     renderMajors();
 }
 
-// 渲染专业表格
-
-// ============================================
-// 渲染专业列表
-// 功能：将筛选后的专业数据渲染为表格行
-// ============================================
 function renderMajors() {
     var tbody = document.getElementById('majorsBody');
     var start = (majorPage - 1) * pageSize;
@@ -1773,7 +1638,6 @@ function renderMajors() {
     
     tbody.innerHTML = html;
     
-    // 渲染分页
     renderPagination('majorPagination', filteredMajors.length, majorPage, function(p) {
         majorPage = p;
         renderMajors();
@@ -1781,13 +1645,6 @@ function renderMajors() {
     });
 }
 
-// 渲染分页
-
-// ============================================
-// 渲染分页控件
-// 参数：totalCount - 总记录数, pageSize - 每页条数, currentPage - 当前页
-// 功能：生成分页按钮，支持页码跳转
-// ============================================
 function renderPagination(containerId, total, current, callback) {
     var container = document.getElementById(containerId);
     var totalPages = Math.ceil(total / pageSize);
@@ -1799,10 +1656,8 @@ function renderPagination(containerId, total, current, callback) {
     
     var html = '';
     
-    // 上一页
     html += '<button class="page-btn" ' + (current === 1 ? 'disabled' : '') + ' onclick="(' + callback.toString() + ')(' + (current - 1) + ')">上一页</button>';
     
-    // 页码
     var startPage = Math.max(1, current - 2);
     var endPage = Math.min(totalPages, current + 2);
     
@@ -1824,22 +1679,13 @@ function renderPagination(containerId, total, current, callback) {
         html += '<button class="page-btn" onclick="(' + callback.toString() + ')(' + totalPages + ')">' + totalPages + '</button>';
     }
     
-    // 下一页
     html += '<button class="page-btn" ' + (current === totalPages ? 'disabled' : '') + ' onclick="(' + callback.toString() + ')(' + (current + 1) + ')">下一页</button>';
     
-    // GitHub 按钮（点击打开 GitHub 项目仓库弹窗）
     html += '<button class="keyword-page-btn" onclick="openKeywordModal()">GitHub</button>';
     
     container.innerHTML = html;
 }
 
-// 显示院校详情
-
-// ============================================
-// 显示院校详情弹窗
-// 参数：schoolCode - 院校代码
-// 功能：从 allSchools 中查找院校信息，渲染详情弹窗
-// ============================================
 function showSchoolDetail(code) {
     var school = allSchools.find(function(s) { return s.code === code; });
     if (!school) return;
@@ -1850,7 +1696,6 @@ function showSchoolDetail(code) {
     var body = document.getElementById('schoolModalBody');
     var html = '';
     
-    // 基本信息
     html += '<div class="detail-section">';
     html += '<h3>📋 基本信息</h3>';
     html += '<div class="detail-grid">';
@@ -1861,7 +1706,6 @@ function showSchoolDetail(code) {
     html += '</div>';
     html += '</div>';
     
-    // 学校标签
     var allTags = getSchoolTags(school.name);
     var hasTags = false;
     for (var cat in allTags) {
@@ -1891,7 +1735,6 @@ function showSchoolDetail(code) {
         html += '</div>';
     }
     
-    // 联系方式
     html += '<div class="detail-section">';
     html += '<h3>📞 联系方式</h3>';
     html += '<div class="detail-grid">';
@@ -1904,7 +1747,6 @@ function showSchoolDetail(code) {
     html += '</div>';
     html += '</div>';
     
-    // 招生信息
     html += '<div class="detail-section">';
     html += '<h3>📊 招生信息</h3>';
     html += '<table class="records-table">';
@@ -1929,7 +1771,6 @@ function showSchoolDetail(code) {
     html += '</table>';
     html += '</div>';
     
-    // 院校简介
     if (school.intro) {
         html += '<div class="detail-section">';
         html += '<h3>📝 院校简介</h3>';
@@ -1937,7 +1778,6 @@ function showSchoolDetail(code) {
         html += '</div>';
     }
     
-    // 备注
     if (school.remark) {
         html += '<div class="detail-section">';
         html += '<h3>📌 备注</h3>';
@@ -1945,9 +1785,6 @@ function showSchoolDetail(code) {
         html += '</div>';
     }
     
-    
-    // ===== 多年份历史分数线 =====
-    // 数据来源: bar.js 中的 historyScoresData 变量
     var schoolScores = historyScoresData[school.name] || {};
     if (Object.keys(schoolScores).length > 0) {
         var years = Object.keys(schoolScores).sort();
@@ -1989,7 +1826,6 @@ function showSchoolDetail(code) {
                         var catName = categoryNames[catKey] || catKey;
                         var bgColor = catIdx % 2 === 0 ? '#f9f7fc' : '#ffffff';
                         
-                        // 给类别名称中的关键词加上颜色
                         var coloredName = catName
                             .replace('普通类', '<span style="color: #1565C0; font-weight: 600;">普通类</span>')
                             .replace('艺术类', '<span style="color: #7B1FA2; font-weight: 600;">艺术类</span>')
@@ -2022,13 +1858,6 @@ function showSchoolDetail(code) {
     document.getElementById('schoolModal').classList.add('show');
 }
 
-// 显示专业列表
-
-// ============================================
-// 显示院校专业列表弹窗
-// 参数：schoolCode - 院校代码
-// 功能：从 allMajors 中查找该院校的所有专业，渲染列表
-// ============================================
 function showMajorsList(schoolCode, pc, jhlb, zykl) {
     var school = allSchools.find(function(s) { return s.code === schoolCode; });
     if (!school) return;
@@ -2040,7 +1869,6 @@ function showMajorsList(schoolCode, pc, jhlb, zykl) {
     document.getElementById('majorsModalTitle').textContent = record.pc_text + ' - ' + record.jhlb_text + ' - ' + record.zykl_text;
     document.getElementById('majorsModalSubtitle').textContent = school.name;
     
-    // 筛选该院校该类别的专业
     var majors = allMajors.filter(function(m) {
         return m.school_code === schoolCode && 
                m.pc === record.pc_text && 
@@ -2082,20 +1910,12 @@ function showMajorsList(schoolCode, pc, jhlb, zykl) {
     
     document.getElementById('majorsList').innerHTML = listHtml;
     
-    // 先关闭院校弹窗，再打开专业列表弹窗
     document.getElementById('schoolModal').classList.remove('show');
     setTimeout(function() {
         document.getElementById('majorsModal').classList.add('show');
     }, 200);
 }
 
-// 显示专业详情
-
-// ============================================
-// 显示专业详情弹窗
-// 参数：majorCode - 专业代码, schoolCode - 院校代码
-// 功能：查找专业的详细信息，渲染详情弹窗
-// ============================================
 function showMajorDetail(schoolCode, majorCode) {
     var major = allMajors.find(function(m) { return m.school_code === schoolCode && m.major_code === majorCode; });
     if (!major) {
@@ -2109,7 +1929,6 @@ function showMajorDetail(schoolCode, majorCode) {
     var body = document.getElementById('majorDetailBody');
     var html = '';
     
-    // 基本信息
     html += '<div class="detail-section">';
     html += '<h3>📋 基本信息</h3>';
     html += '<div class="detail-grid">';
@@ -2117,19 +1936,16 @@ function showMajorDetail(schoolCode, majorCode) {
     html += '<div class="detail-item"><div class="detail-label">专业代码</div><div class="detail-value">' + major.major_code + '</div></div>';
     html += '<div class="detail-item" style="grid-column: span 2;"><div class="detail-label">专业名称</div><div class="detail-value" style="font-size: 16px; font-weight: bold;">' + major.major_name + '</div></div>';
     
-    // 批次颜色
     var pcColor = '#333';
     if (major.pc === '本科') pcColor = '#1F4E79';
     else if (major.pc === '预科') pcColor = '#C00000';
     html += '<div class="detail-item"><div class="detail-label">专业批次</div><div class="detail-value" style="color:' + pcColor + '; font-weight: bold;">' + major.pc + '</div></div>';
     
-    // 计划类别颜色
     var jhlbColor = '#333';
     if (major.jhlb === '体育类') jhlbColor = '#2E7D32';
     else if (major.jhlb === '艺术类') jhlbColor = '#8E24AA';
     html += '<div class="detail-item"><div class="detail-label">计划类别</div><div class="detail-value" style="color:' + jhlbColor + '; font-weight: bold;">' + major.jhlb + '</div></div>';
     
-    // 招生科类颜色
     var zyklColor = '#333';
     if (major.zykl === '文史类') zyklColor = '#C62828';
     else if (major.zykl === '理工类') zyklColor = '#1565C0';
@@ -2139,7 +1955,6 @@ function showMajorDetail(schoolCode, majorCode) {
     html += '</div>';
     html += '</div>';
     
-    // 专业详情
     var hasDetail = major.major_direction || major.study_duration || major.tuition;
     if (hasDetail) {
         html += '<div class="detail-section">';
@@ -2160,7 +1975,6 @@ function showMajorDetail(schoolCode, majorCode) {
         html += '</div>';
     }
     
-    // 备注
     if (major.major_remark) {
         html += '<div class="detail-section">';
         html += '<h3>📌 备注</h3>';
@@ -2174,19 +1988,11 @@ function showMajorDetail(schoolCode, majorCode) {
     document.body.style.overflow = 'hidden';
 }
 
-// 关闭弹窗
-
-// ============================================
-// 关闭弹窗
-// 参数：modalId - 弹窗元素的 ID
-// 功能：移除弹窗的 show 类，隐藏弹窗
-// ============================================
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
     document.body.style.overflow = '';
 }
 
-// 点击弹窗外部关闭
 document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) {
@@ -2195,7 +2001,6 @@ document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
     });
 });
 
-// ESC键关闭弹窗
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.show').forEach(function(m) {
@@ -2207,17 +2012,6 @@ document.addEventListener('keydown', function(e) {
 
 <!-- ============================================
    自定义下拉选择器（Custom Select）
-   功能：替代原生 <select>，提供统一的自定义下拉交互
-   用法：
-     <custom-select class="filter-select" id="xxx">
-         <option value="">默认项</option>
-         <option value="1">选项一</option>
-     </custom-select>
-   接口（与原生 select 兼容）：
-     - 读取值：element.value
-     - 设置值：element.value = 'xxx'
-     - 追加选项：element.appendChild(optionEl) 或 element.addOption(v, t)
-     - 值变化时派发 change 事件（bubbles）
    ============================================ -->
 <script>
 (function () {
@@ -2245,15 +2039,12 @@ document.addEventListener('keydown', function(e) {
 
     Object.setPrototypeOf(CustomSelectElement, HTMLElement);
 
-    /* ---------- 生命周期 ---------- */
-
     CustomSelectElement.prototype.connectedCallback = function () {
         if (this._built) return;
         this._built = true;
 
         var self = this;
 
-        // 收集初始 <option>
         var initialOptions = Array.prototype.slice.call(this.querySelectorAll(OPTION_TAG));
         for (var i = 0; i < initialOptions.length; i++) {
             if (initialOptions[i].parentNode === self) {
@@ -2261,7 +2052,6 @@ document.addEventListener('keydown', function(e) {
             }
         }
 
-        // 创建触发器与菜单
         this._trigger = document.createElement('div');
         this._trigger.className = 'cs-trigger';
         this._menu = document.createElement('div');
@@ -2270,14 +2060,12 @@ document.addEventListener('keydown', function(e) {
         Element.prototype.appendChild.call(this, this._trigger);
         Element.prototype.appendChild.call(this, this._menu);
 
-        // 载入初始选项
         this._suspend = true;
         for (var j = 0; j < initialOptions.length; j++) {
             this._addOption(initialOptions[j].value, initialOptions[j].textContent);
         }
         this._suspend = false;
 
-        // 点击触发器展开/收起
         this._trigger.addEventListener('click', function (e) {
             e.stopPropagation();
             self._toggle();
@@ -2287,8 +2075,6 @@ document.addEventListener('keydown', function(e) {
         this._renderMenu();
     };
 
-    /* ---------- 兼容原生 select 的 appendChild ---------- */
-
     CustomSelectElement.prototype.appendChild = function (node) {
         if (node && node.nodeType === 1 && node.tagName === OPTION_TAG) {
             this._addOption(node.value, node.textContent);
@@ -2296,8 +2082,6 @@ document.addEventListener('keydown', function(e) {
         }
         return Element.prototype.appendChild.call(this, node);
     };
-
-    /* ---------- value 读写 ---------- */
 
     Object.defineProperty(CustomSelectElement.prototype, 'value', {
         get: function () {
@@ -2315,8 +2099,6 @@ document.addEventListener('keydown', function(e) {
         configurable: true
     });
 
-    /* ---------- 内部方法 ---------- */
-
     CustomSelectElement.prototype._addOption = function (value, label) {
         var v = (value === undefined || value === null) ? '' : String(value);
         var l = (label === undefined || label === null) ? '' : String(label);
@@ -2333,7 +2115,6 @@ document.addEventListener('keydown', function(e) {
         }
     };
 
-    // 供外部直接添加选项（可选）
     CustomSelectElement.prototype.addOption = function (value, label) {
         this._addOption(value, label);
         return this;
@@ -2422,8 +2203,6 @@ document.addEventListener('keydown', function(e) {
     };
 
     window.customElements.define('custom-select', CustomSelectElement);
-
-    /* ---------- 全局：点击空白处 / ESC 关闭下拉 ---------- */
 
     document.addEventListener('click', function (e) {
         var opened = document.querySelectorAll('custom-select.cs-open');
@@ -2676,14 +2455,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -2744,17 +2516,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -2896,14 +2668,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -2964,17 +2729,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -3112,14 +2877,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -3180,17 +2938,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -3329,14 +3087,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -3397,17 +3148,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -3527,14 +3278,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -3595,17 +3339,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -3725,14 +3469,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -3793,17 +3530,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -3825,14 +3562,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
    ============================================ */
-/* 分省统计表格样式 */
 .table-box {
     overflow: auto;
     max-height: 60vh;
@@ -3893,17 +3623,17 @@ document.addEventListener('keydown', function(e) {
     z-index: 12;
     background: #f0e8f8;
 }
+
 /* ============================================
    通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
    ============================================ */
 .text-center { text-align: center; }
 .font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+.text-purple { color: #6B468B; }
+.text-blue { color: #1565C0; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-art { color: #8E24AA; }
 </style>
 
 </div>
@@ -4045,10 +3775,6 @@ document.addEventListener('keydown', function(e) {
 
 /* ============================================
    响应式适配
-   功能：针对不同屏幕宽度调整布局
-   - 1200px：平板横屏
-   - 768px：平板竖屏/手机横屏
-   - 480px：手机竖屏
    ============================================ */
 @media (max-width: 1200px) {
     .container { max-width: 100%; }
@@ -4062,9 +3788,22 @@ document.addEventListener('keydown', function(e) {
     .container { padding: 0 10px; margin: 10px auto; }
     .tabs { flex-wrap: wrap; }
     .tab { flex: none; width: 50%; padding: 12px 8px; font-size: 14px; }
+
     .search-bar { flex-direction: column; }
+    .search-bar > * {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .search-bar > *:last-child { margin-bottom: 0; }
     .search-input, .filter-select, .search-btn { width: 100%; min-width: auto; }
-    .stats { flex-direction: column; gap: 10px; }
+
+    /* 统计信息：一排、均匀分布、两端对齐 */
+    .stats { padding: 10px 3px; }
+    .stat-item { padding: 0 3px; }
+    .stat-number { font-size: 18px; }
+    .stat-label { font-size: 11px; }
+
     .schools-grid { grid-template-columns: 1fr; }
     .school-card { padding: 12px; }
     .school-header { flex-direction: column; gap: 5px; }
@@ -4092,7 +3831,12 @@ document.addEventListener('keydown', function(e) {
     .header p { font-size: 11px; }
     .tab { font-size: 13px; padding: 10px 5px; }
     .search-input, .filter-select, .search-btn { padding: 10px; font-size: 13px; }
-    .stat-number { font-size: 20px; }
+
+    .stats { padding: 8px 2px; }
+    .stat-item { padding: 0 2px; }
+    .stat-number { font-size: 16px; }
+    .stat-label { font-size: 10px; }
+
     .school-name { font-size: 14px; }
     .school-code { font-size: 11px; }
     .tag { font-size: 10px; padding: 1px 5px; }
@@ -4137,89 +3881,6 @@ document.addEventListener('keydown', function(e) {
         font-size: 12px;
     }
 }
-
-
-/* ============================================
-   分省统计表格样式
-   功能：定义院校详情页中分省录取统计表格的样式
-   特性：
-     - 表头粘性定位（row-sticky-top）：滚动时表头始终可见
-     - 首列粘性定位（col-sticky）：滚动时省份名列始终可见
-     - 合计行粘性定位（total-row）：滚动时合计行始终可见
-     - 圆角表头（corner-tl）：左上角特殊样式
-   ============================================ */
-/* 分省统计表格样式 */
-.table-box {
-    overflow: auto;
-    max-height: 60vh;
-    padding-top: 1px;
-}
-.province-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-.province-table th,
-.province-table td {
-    border: 1px solid #d8c8e8;
-    padding: 8px;
-    text-align: center;
-    font-size: 14px;
-    width: 70px;
-}
-.row-sticky-top {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-.row-sticky-top th {
-    background: #6B468B;
-    color: white;
-}
-.col-sticky {
-    position: sticky;
-    left: 0;
-    z-index: 11;
-    background: white;
-    text-align: left;
-    font-weight: bold;
-}
-.row-sticky-top .col-sticky {
-    z-index: 20;
-    background: #6B468B;
-    color: white;
-}
-.corner-tl {
-    position: sticky;
-    left: 0;
-    top: 0;
-    z-index: 20;
-    background: #6B468B;
-    color: white;
-}
-.total-row {
-    position: sticky;
-    bottom: 0;
-    z-index: 9;
-    background: #f0e8f8;
-    font-weight: bold;
-    color: #6B468B;
-}
-.total-row .col-sticky {
-    z-index: 12;
-    background: #f0e8f8;
-}
-/* ============================================
-   通用工具类
-   功能：定义常用的文本对齐、字重、颜色工具类
-   ============================================ */
-.text-center { text-align: center; }
-.font-bold { font-weight: bold; }
-.text-purple { color: #6B468B; }  /* 紫色 - 主题色 */
-.text-blue { color: #1565C0; }     /* 蓝色 - 理工类 */
-.text-red { color: #C62828; }      /* 红色 - 医学/警告 */
-.text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
-.text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
 </style>
 
 </div>
@@ -4240,13 +3901,8 @@ document.addEventListener('keydown', function(e) {
     </div>
 </div>
 
-<script>// 显示分数线弹窗
-
-// ============================================
+<script>
 // 显示分数线弹窗
-// 功能：从 mark.js 的 scorelineData 中获取分数线数据，
-//       渲染本科批次和预科批次的分数线表格
-// ============================================
 function showScoreLineModal() {
     if (typeof scorelineData === 'undefined') {
         var modalBody = document.querySelector('#scorelineModal .modal-body');
@@ -4310,12 +3966,6 @@ function showScoreLineModal() {
 }
 
 // 显示分省统计弹窗
-
-// ============================================
-// 显示分省统计弹窗
-// 功能：从 allSchools 数据中按省份统计招生信息，
-//       渲染分省统计表
-// ============================================
 function showProvinceStatsModal() {
     if (typeof allSchools === 'undefined' || !allSchools.length) {
         console.warn('allSchools 未定义或为空，请检查 data.js 是否正确加载');
@@ -4421,17 +4071,12 @@ function showProvinceStatsModal() {
 
     document.getElementById('provinceStatsModal').classList.add('show');
     document.body.style.overflow = 'hidden';
-}</script>
+}
+</script>
 
 <script>
 // ============================================
 // 防抖函数（debounce）
-// ============================================
-// 功能：限制函数在指定间隔内只执行一次
-// 参数：
-//   - func：需要防抖的函数
-//   - wait：等待时间（毫秒）
-// 用途：搜索输入框的 oninput 事件，避免频繁触发搜索逻辑
 // ============================================
 function debounce(func, wait) {
     var timeout;
@@ -4445,7 +4090,6 @@ function debounce(func, wait) {
     };
 }
 
-// 优化后的搜索函数（带防抖）
 var debouncedSearchSchools = debounce(function() {
     searchSchools();
 }, 300);
@@ -4454,7 +4098,6 @@ var debouncedSearchMajors = debounce(function() {
     searchMajors();
 }, 300);
 
-// 页面加载完成后，替换搜索事件
 document.addEventListener('DOMContentLoaded', function() {
     var schoolSearch = document.getElementById('schoolSearch');
     if (schoolSearch) {
@@ -4470,7 +4113,6 @@ document.addEventListener('DOMContentLoaded', function() {
         majorSearch.addEventListener('input', debouncedSearchMajors);
     }
     
-    // 下拉框也加一点延迟
     var selects = ['schoolProvince', 'schoolPc', 'schoolJhlb', 'schoolZykl', 'schoolTag',
                    'majorProvince', 'majorPc', 'majorJhlb', 'majorZykl'];
     selects.forEach(function(id) {
@@ -4486,7 +4128,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// 获取学校的所有标签
 function getSchoolTags(schoolName) {
     var result = {};
     for (var category in schoolTagsData) {
@@ -4500,7 +4141,6 @@ function getSchoolTags(schoolName) {
     return result;
 }
 
-// 获取学校的主要标签（用于卡片显示）
 function getSchoolMainTags(schoolName) {
     var tags = [];
     var priorityTags = ['985工程', '211工程'];
@@ -4517,12 +4157,10 @@ function getSchoolMainTags(schoolName) {
     return tags;
 }
 
-// 获取标签的CSS类名
 function getTagClass(category) {
     return 'tag-level';
 }
 
-// 提示词弹窗功能
 function openKeywordModal() {
     document.getElementById('keywordModal').classList.add('show');
     document.body.style.overflow = 'hidden';
@@ -4579,7 +4217,6 @@ function showCopySuccess(btn) {
     }, 2000);
 }
 
-// 点击弹窗外部关闭
 document.addEventListener('click', function(e) {
     var modal = document.getElementById('keywordModal');
     if (e.target === modal) {
@@ -4587,7 +4224,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ESC键关闭
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         var modal = document.getElementById('keywordModal');
@@ -4597,21 +4233,16 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-
-
-// ========== 替换页面上所有 "2026" 为 year.js 中的 currentYear（修改 year.js 即可全局改年份） ==========
+// ========== 替换页面上所有 "2026" 为 year.js 中的 currentYear ==========
 (function() {
     var year = typeof currentYear !== "undefined" ? currentYear : "2026";
-    // 替换 span.year-text 的内容
     document.querySelectorAll('.year-text').forEach(function(el) {
         el.textContent = year;
     });
-    // 替换 title 中的年份
     var titleEl = document.querySelector('title');
     if (titleEl && titleEl.textContent.includes('年联合招生')) {
         titleEl.textContent = year + '年联合招生院校专业查询';
     }
-    // 替换 keywordContent 中的年份
     var kwEl = document.getElementById('keywordContent');
     if (kwEl) {
         kwEl.innerHTML = kwEl.innerHTML.replace(/2026/g, year);
@@ -4628,7 +4259,7 @@ document.addEventListener('keydown', function(e) {
             <span class="keyword-close" onclick="closeKeywordModal()">&times;</span>
         </div>
         <div class="keyword-modal-body">
-            <pre <pre id="keywordContent" style="white-space:pre-wrap;word-wrap:break-word;"><a href="https://github.com/yatfan0513/hmt-liankao-data" target="_blank" rel="noopener noreferrer" style="color:#6B468B;font-size:16px;font-weight:bold;">https://github.com/yatfan0513/hmt-liankao-data</a></pre>
+            <pre id="keywordContent" style="white-space:pre-wrap;word-wrap:break-word;"><a href="https://github.com/yatfan0513/hmt-liankao-data" target="_blank" rel="noopener noreferrer" style="color:#6B468B;font-size:16px;font-weight:bold;">https://github.com/yatfan0513/hmt-liankao-data</a></pre>
         </div>
         <div class="keyword-modal-footer">
             <button class="copy-btn" id="copyBtn" onclick="copyKeyword()">📋 一键复制</button>
@@ -4643,11 +4274,6 @@ document.addEventListener('keydown', function(e) {
 // ============================================
 // 第三层兜底脚本
 // ============================================
-// 功能：在文档末尾执行，确保无论前面的脚本是否执行成功，
-//       年份都会被正确替换
-// 说明：如果 year.js 加载失败，使用默认值 "2026" 作为兜底
-// ============================================
-// 兜底：确保年份被正确替换（即使前面的脚本未执行）
 (function() {
     var year = (typeof currentYear !== "undefined") ? currentYear : "2026";
     var spans = document.querySelectorAll('.year-text');
