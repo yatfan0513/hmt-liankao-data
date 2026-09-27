@@ -808,12 +808,142 @@ body {
 .text-red { color: #C62828; }      /* 红色 - 医学/警告 */
 .text-green { color: #2E7D32; }    /* 绿色 - 直属类 */
 .text-art { color: #8E24AA; }      /* 紫色 - 艺术类 */
+
+/* ============================================
+   自定义下拉选择器（Custom Select）样式
+   功能：替代原生 <select>，提供统一视觉与交互
+   - .cs-trigger ：显示当前选中项的按钮区域
+   - .cs-menu    ：展开后的选项面板
+   - .cs-option  ：单个选项
+   - .cs-open    ：展开状态
+   ============================================ */
+custom-select {
+    display: inline-block;
+}
+custom-select option {
+    display: none;
+}
+custom-select.filter-select {
+    padding: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    vertical-align: middle;
+}
+custom-select.filter-select:hover {
+    border-color: #b9a3d3;
+}
+custom-select.filter-select.cs-open {
+    border-color: #6B468B;
+}
+custom-select.filter-select .cs-trigger {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 30px 12px 15px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+custom-select.filter-select .cs-trigger::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -5px;
+    border-right: 2px solid #8B5FB0;
+    border-bottom: 2px solid #8B5FB0;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+    pointer-events: none;
+}
+custom-select.filter-select.cs-open .cs-trigger::after {
+    margin-top: -2px;
+    transform: rotate(-135deg);
+}
+custom-select.filter-select .cs-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: -2px;
+    min-width: calc(100% + 4px);
+    width: max-content;
+    max-width: 320px;
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px;
+    background: #fff;
+    border: 2px solid #d8c8e8;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(107, 70, 139, 0.18);
+    box-sizing: border-box;
+    z-index: 600;
+}
+custom-select.filter-select.cs-open .cs-menu {
+    display: block;
+}
+custom-select.filter-select .cs-option {
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+custom-select.filter-select .cs-option:hover {
+    background: #f0e8f8;
+    color: #6B468B;
+}
+custom-select.filter-select .cs-option.selected {
+    background: #6B468B;
+    color: #fff;
+    font-weight: bold;
+}
+custom-select.filter-select .cs-option.selected:hover {
+    background: #8B5FB0;
+    color: #fff;
+}
+custom-select.filter-select .cs-option.disabled {
+    color: #bbb;
+    cursor: default;
+}
+custom-select.filter-select .cs-option.disabled:hover {
+    background: transparent;
+    color: #bbb;
+}
+custom-select.filter-select .cs-menu::-webkit-scrollbar {
+    width: 6px;
+}
+custom-select.filter-select .cs-menu::-webkit-scrollbar-thumb {
+    background: #d8c8e8;
+    border-radius: 3px;
+}
+@media (max-width: 768px) {
+    custom-select.filter-select {
+        width: 100%;
+        min-width: auto;
+    }
+    custom-select.filter-select .cs-menu {
+        max-width: none;
+        width: calc(100% + 4px);
+        min-width: 0;
+    }
+}
 /* ============================================
    样式定义结束
-   说明：以上CSS样式覆盖页面所有组件的视觉表现
-   - 响应式断点：1200px / 768px / 480px
-   - 主题色：#6B468B（紫色）
-   - 配色方案：低饱和度紫色系
    ============================================ */
 </style>
 </head>
@@ -869,28 +999,28 @@ body {
    - 标签筛选：按院校标签过滤（如985、211等）
    ============================================ --><div class="search-bar">
             <input type="text" class="search-input" id="schoolSearch" placeholder="搜索院校名称或代码..." oninput="searchSchools()">
-            <select class="filter-select" id="schoolProvince" onchange="searchSchools()">
+            <custom-select class="filter-select" id="schoolProvince" onchange="searchSchools()">
                 <option value="">全部省份</option>
-            </select>
-            <select class="filter-select" id="schoolPc" onchange="searchSchools()">
+            </custom-select>
+            <custom-select class="filter-select" id="schoolPc" onchange="searchSchools()">
                 <option value="">全部批次</option>
                 <option value="11">本科</option>
                 <option value="19">预科</option>
-            </select>
-            <select class="filter-select" id="schoolJhlb" onchange="searchSchools()">
+            </custom-select>
+            <custom-select class="filter-select" id="schoolJhlb" onchange="searchSchools()">
                 <option value="">全部类别</option>
                 <option value="00">普通类</option>
                 <option value="30">体育类</option>
                 <option value="80">艺术类</option>
-            </select>
-            <select class="filter-select" id="schoolZykl" onchange="searchSchools()">
+            </custom-select>
+            <custom-select class="filter-select" id="schoolZykl" onchange="searchSchools()">
                 <option value="">全部科类</option>
                 <option value="1">文史类</option>
                 <option value="2">理工类</option>
-            </select>
-            <select class="filter-select" id="schoolTag" onchange="searchSchools()">
+            </custom-select>
+            <custom-select class="filter-select" id="schoolTag" onchange="searchSchools()">
                 <option value="">全部标签</option>
-            </select>
+            </custom-select>
         </div>
         
         
@@ -945,24 +1075,24 @@ body {
    ============================================ --><div class="tab-content" id="majorTab" style="display:none;">
         <div class="search-bar">
             <input type="text" class="search-input" id="majorSearch" placeholder="搜索专业名称或院校..." oninput="searchMajors()">
-            <select class="filter-select" id="majorProvince" onchange="searchMajors()">
+            <custom-select class="filter-select" id="majorProvince" onchange="searchMajors()">
                 <option value="">全部省份</option>
-            </select>
-            <select class="filter-select" id="majorPc" onchange="searchMajors()">
+            </custom-select>
+            <custom-select class="filter-select" id="majorPc" onchange="searchMajors()">
                 <option value="">全部批次</option>
                 <option value="本科">本科</option>
-            </select>
-            <select class="filter-select" id="majorJhlb" onchange="searchMajors()">
+            </custom-select>
+            <custom-select class="filter-select" id="majorJhlb" onchange="searchMajors()">
                 <option value="">全部类别</option>
                 <option value="普通类">普通类</option>
                 <option value="体育类">体育类</option>
                 <option value="艺术类">艺术类</option>
-            </select>
-            <select class="filter-select" id="majorZykl" onchange="searchMajors()">
+            </custom-select>
+            <custom-select class="filter-select" id="majorZykl" onchange="searchMajors()">
                 <option value="">全部科类</option>
                 <option value="文史类">文史类</option>
                 <option value="理工类">理工类</option>
-            </select>
+            </custom-select>
         </div>
         
         <div class="stats" id="majorStats">
@@ -2073,6 +2203,246 @@ document.addEventListener('keydown', function(e) {
         });
     }
 });
+</script>
+
+<!-- ============================================
+   自定义下拉选择器（Custom Select）
+   功能：替代原生 <select>，提供统一的自定义下拉交互
+   用法：
+     <custom-select class="filter-select" id="xxx">
+         <option value="">默认项</option>
+         <option value="1">选项一</option>
+     </custom-select>
+   接口（与原生 select 兼容）：
+     - 读取值：element.value
+     - 设置值：element.value = 'xxx'
+     - 追加选项：element.appendChild(optionEl) 或 element.addOption(v, t)
+     - 值变化时派发 change 事件（bubbles）
+   ============================================ -->
+<script>
+(function () {
+    'use strict';
+
+    if (typeof window.customElements === 'undefined') return;
+    if (window.customElements.get('custom-select')) return;
+
+    var OPTION_TAG = 'OPTION';
+
+    function CustomSelectElement() {
+        var self = Reflect.construct(HTMLElement, [], CustomSelectElement);
+        self._options = [];
+        self._value = '';
+        self._built = false;
+        self._open = false;
+        self._suspend = false;
+        self._trigger = null;
+        self._menu = null;
+        return self;
+    }
+
+    CustomSelectElement.prototype = Object.create(HTMLElement.prototype);
+    CustomSelectElement.prototype.constructor = CustomSelectElement;
+
+    Object.setPrototypeOf(CustomSelectElement, HTMLElement);
+
+    /* ---------- 生命周期 ---------- */
+
+    CustomSelectElement.prototype.connectedCallback = function () {
+        if (this._built) return;
+        this._built = true;
+
+        var self = this;
+
+        // 收集初始 <option>
+        var initialOptions = Array.prototype.slice.call(this.querySelectorAll(OPTION_TAG));
+        for (var i = 0; i < initialOptions.length; i++) {
+            if (initialOptions[i].parentNode === self) {
+                self.removeChild(initialOptions[i]);
+            }
+        }
+
+        // 创建触发器与菜单
+        this._trigger = document.createElement('div');
+        this._trigger.className = 'cs-trigger';
+        this._menu = document.createElement('div');
+        this._menu.className = 'cs-menu';
+
+        Element.prototype.appendChild.call(this, this._trigger);
+        Element.prototype.appendChild.call(this, this._menu);
+
+        // 载入初始选项
+        this._suspend = true;
+        for (var j = 0; j < initialOptions.length; j++) {
+            this._addOption(initialOptions[j].value, initialOptions[j].textContent);
+        }
+        this._suspend = false;
+
+        // 点击触发器展开/收起
+        this._trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            self._toggle();
+        });
+
+        this._renderTrigger();
+        this._renderMenu();
+    };
+
+    /* ---------- 兼容原生 select 的 appendChild ---------- */
+
+    CustomSelectElement.prototype.appendChild = function (node) {
+        if (node && node.nodeType === 1 && node.tagName === OPTION_TAG) {
+            this._addOption(node.value, node.textContent);
+            return node;
+        }
+        return Element.prototype.appendChild.call(this, node);
+    };
+
+    /* ---------- value 读写 ---------- */
+
+    Object.defineProperty(CustomSelectElement.prototype, 'value', {
+        get: function () {
+            return this._value;
+        },
+        set: function (v) {
+            var val = (v === undefined || v === null) ? '' : String(v);
+            if (this._value === val) return;
+            this._value = val;
+            if (this._built) {
+                this._renderTrigger();
+                this._renderMenu();
+            }
+        },
+        configurable: true
+    });
+
+    /* ---------- 内部方法 ---------- */
+
+    CustomSelectElement.prototype._addOption = function (value, label) {
+        var v = (value === undefined || value === null) ? '' : String(value);
+        var l = (label === undefined || label === null) ? '' : String(label);
+
+        this._options.push({ value: v, label: l });
+
+        if (this._options.length === 1) {
+            this._value = v;
+        }
+
+        if (this._built && !this._suspend) {
+            this._renderTrigger();
+            this._renderMenu();
+        }
+    };
+
+    // 供外部直接添加选项（可选）
+    CustomSelectElement.prototype.addOption = function (value, label) {
+        this._addOption(value, label);
+        return this;
+    };
+
+    CustomSelectElement.prototype._renderTrigger = function () {
+        if (!this._trigger) return;
+        var label = null;
+        for (var i = 0; i < this._options.length; i++) {
+            if (this._options[i].value === this._value) {
+                label = this._options[i].label;
+                break;
+            }
+        }
+        if (label === null) {
+            label = this._options.length > 0 ? this._options[0].label : '';
+        }
+        this._trigger.textContent = label;
+    };
+
+    CustomSelectElement.prototype._renderMenu = function () {
+        if (!this._menu) return;
+        var self = this;
+
+        this._menu.innerHTML = '';
+
+        if (this._options.length === 0) {
+            var emptyEl = document.createElement('div');
+            emptyEl.className = 'cs-option disabled';
+            emptyEl.textContent = '暂无选项';
+            this._menu.appendChild(emptyEl);
+            return;
+        }
+
+        for (var i = 0; i < this._options.length; i++) {
+            (function (opt) {
+                var item = document.createElement('div');
+                item.className = 'cs-option' + (opt.value === self._value ? ' selected' : '');
+                item.textContent = opt.label;
+                item.title = opt.label;
+                item.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    self._select(opt.value);
+                });
+                self._menu.appendChild(item);
+            })(this._options[i]);
+        }
+    };
+
+    CustomSelectElement.prototype._select = function (value) {
+        var changed = (this._value !== value);
+        this._value = value;
+        this._renderTrigger();
+        this._renderMenu();
+        this._close();
+
+        if (changed) {
+            this.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    };
+
+    CustomSelectElement.prototype._toggle = function () {
+        if (this._open) {
+            this._close();
+        } else {
+            this._openMenu();
+        }
+    };
+
+    CustomSelectElement.prototype._openMenu = function () {
+        var self = this;
+        var opened = document.querySelectorAll('custom-select.cs-open');
+        for (var i = 0; i < opened.length; i++) {
+            if (opened[i] !== self && typeof opened[i]._close === 'function') {
+                opened[i]._close();
+            }
+        }
+        this._open = true;
+        this.classList.add('cs-open');
+    };
+
+    CustomSelectElement.prototype._close = function () {
+        if (!this._open) return;
+        this._open = false;
+        this.classList.remove('cs-open');
+    };
+
+    window.customElements.define('custom-select', CustomSelectElement);
+
+    /* ---------- 全局：点击空白处 / ESC 关闭下拉 ---------- */
+
+    document.addEventListener('click', function (e) {
+        var opened = document.querySelectorAll('custom-select.cs-open');
+        for (var i = 0; i < opened.length; i++) {
+            if (!opened[i].contains(e.target)) {
+                opened[i]._close();
+            }
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            var opened = document.querySelectorAll('custom-select.cs-open');
+            for (var i = 0; i < opened.length; i++) {
+                opened[i]._close();
+            }
+        }
+    });
+})();
 </script>
 
 <div id="scorelineModal" class="modal-overlay" onclick="if(event.target === this) closeModal('scorelineModal')">
